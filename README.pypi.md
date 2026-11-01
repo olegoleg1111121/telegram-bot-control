@@ -1,8 +1,6 @@
 # Telegram Bot Control
 
-[Русский](#russian) · [English](#english)
-
-<a id="russian"></a>
+[Русский](#русский) · [English](#english)
 
 ## Русский
 
@@ -74,8 +72,6 @@ tgbots web --host 127.0.0.1 --port 8765 --data-dir /srv/bot-control/data
 Автозагрузка как системная служба и импорт старых файлов логов пока не реализованы.
 
 ---
-
-<a id="english"></a>
 
 ## English
 

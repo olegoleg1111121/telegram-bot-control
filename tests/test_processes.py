@@ -4,6 +4,7 @@ import shutil
 import sqlite3
 import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -383,6 +384,26 @@ def test_stop_during_interpreter_startup_is_cooperative(complex_bot):
     wait_for(lambda: manager.latest_run(bot_id)["status"] == "running")
     # No SDK session exists yet; the launcher must cancel or deliver stop after registration.
     assert manager.control(bot_id, "stop")["status"] == "stopped"
+    assert not manager.active_sessions(bot_id)
+
+
+def test_cooperative_stop_retries_temporary_mailbox_write_lock(complex_bot):
+    manager, bot_id, *_ = complex_bot
+    manager.control(bot_id, "start")
+    wait_for(lambda: manager.active_sessions(bot_id))
+    locked = threading.Event()
+
+    def hold_writer():
+        with sqlite3.connect(manager.directory / f"bot-{bot_id}.sqlite3", timeout=3) as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            locked.set()
+            time.sleep(0.6)
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        writer = pool.submit(hold_writer)
+        assert locked.wait(timeout=5)
+        assert manager.control(bot_id, "stop")["status"] == "stopped"
+        writer.result(timeout=5)
     assert not manager.active_sessions(bot_id)
 
 

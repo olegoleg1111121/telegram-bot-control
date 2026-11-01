@@ -529,7 +529,7 @@ class ProcessManager:
             items = [session for session in items if session["id"] not in requested]
             if not items:
                 return
-            connection = sqlite3.connect(mailbox_path(self.directory, bot_id), timeout=1)
+            connection = sqlite3.connect(mailbox_path(self.directory, bot_id), timeout=0.1)
             try:
                 with connection:
                     for session in items:
@@ -537,7 +537,15 @@ class ProcessManager:
                             "INSERT INTO control_requests VALUES (?,?,?,?,?,'pending','')",
                             (uuid.uuid4().hex, session["id"], "stop", time.time(), time.time() + 8),
                         )
-                        requested.add(session["id"])
+                # A failed commit must remain eligible for retry.
+                requested.update(session["id"] for session in items)
+            except sqlite3.OperationalError as error:
+                if getattr(error, "sqlite_errorcode", 0) & 0xFF not in (
+                    sqlite3.SQLITE_BUSY,
+                    sqlite3.SQLITE_LOCKED,
+                ):
+                    raise
+                # The SDK may be flushing a batch. Retry within the stop deadline.
             finally:
                 connection.close()
 
@@ -559,6 +567,7 @@ class ProcessManager:
         waiting_for_startup = not sessions and run and run["status"] in ACTIVE
         deadline = time.monotonic() + (0.5 if force else 15 if waiting_for_startup else 6)
         while time.monotonic() < deadline:
+            request_stop(sessions)
             # Stop may arrive while Python is still importing, before SDK registration.
             if run:
                 new_sessions = [

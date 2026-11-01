@@ -9,7 +9,7 @@
 - Copyable AI integration guide in the repository, dashboard and connection wizard.
 - Read-only regular-Python discovery alongside existing project virtual environments.
 - No additional runtime dependencies.
-- Allow bounded extra grace for cooperative stop while a managed bot is still importing.
+- Allow bounded startup grace and retry temporary SQLite write locks for cooperative stop.
 
 ## 0.5.1 — 2026-10-30
 
