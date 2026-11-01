@@ -1,5 +1,9 @@
 # Публикация библиотеки в PyPI
 
+Версия 0.5.1 [опубликована в PyPI](https://pypi.org/project/telegram-bot-control/)
+2026-11-01 через [Trusted Publishing](https://github.com/olegoleg1111121/telegram-bot-control/actions/runs/41307728202).
+Одноразовая настройка для текущего репозитория уже выполнена.
+
 GitHub и PyPI используют разные аккаунты. На PyPI нужны подтверждённая почта и
 [двухфакторная аутентификация](https://docs.pypi.org/your-account/two-factor-authentication/).
 Пароли, коды 2FA и API-токены не нужно добавлять в исходники или GitHub Secrets.
@@ -36,7 +40,7 @@ Pending publisher не резервирует имя: проект появля�
 
 ## Команды установки
 
-После успешной публикации в PyPI:
+Установка из PyPI:
 
 ```sh
 python -m pip install "telegram-bot-control[aiogram]"
@@ -49,7 +53,7 @@ python -m pip install telegram-bot-control
 tgbots web --port 8765 --data-dir /srv/bot-control/data
 ```
 
-До публикации в PyPI можно установить wheel опубликованного GitHub Release:
+Альтернативно можно установить wheel GitHub Release:
 
 ```sh
 python -m pip install "telegram-bot-control[aiogram] @ https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.5.1/telegram_bot_control-0.5.1-py3-none-any.whl"

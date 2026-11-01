@@ -36,15 +36,16 @@ _All screenshots use synthetic demo data and anonymous server labels._
 
 Download desktop installers or the portable Windows ZIP from
 [GitHub Releases](https://github.com/olegoleg1111121/telegram-bot-control/releases).
-The Python wheel includes the web dashboard and can be installed without Node.js:
+Install the published [Python package](https://pypi.org/project/telegram-bot-control/)
+without Node.js; the wheel includes the web dashboard:
 
 ```sh
-python -m pip install "telegram-bot-control[aiogram] @ https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.5.1/telegram_bot_control-0.5.1-py3-none-any.whl"
+python -m pip install "telegram-bot-control[aiogram]"
 ```
 
-A PyPI Trusted Publishing workflow is included. Once the PyPI project is published,
-the equivalent command is `python -m pip install "telegram-bot-control[aiogram]"`.
-[PyPI setup and publication](docs/pypi.ru.md).
+For the dashboard/bridge alone, install `telegram-bot-control` without the extra.
+PyPI releases use GitHub Actions Trusted Publishing without a stored API token.
+[Publication workflow](docs/pypi.ru.md).
 
 ## What it does
 

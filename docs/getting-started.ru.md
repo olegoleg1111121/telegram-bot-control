@@ -57,16 +57,18 @@ Python устанавливается отдельно. Для разработ�
 Укажите полный путь к `python.exe`, например `C:\BotControl\.venv\Scripts\python.exe`,
 и папку данных `C:\BotControl\data`. Нажмите **«Подключиться»**.
 
-В выбранном Python должен быть установлен наш пакет. Скачайте wheel из релиза,
-затем выполните, подставив действительное расположение файла:
+В выбранном Python должен быть установлен наш пакет. Установите его из PyPI:
 
 ```powershell
-& "C:\BotControl\.venv\Scripts\python.exe" -m pip install "C:\Downloads\telegram_bot_control-0.5.1-py3-none-any.whl"
+& "C:\BotControl\.venv\Scripts\python.exe" -m pip install telegram-bot-control
 ```
 
 У ботов могут быть разные виртуальные окружения. Устанавливайте библиотеку в каждое
 из них. Python панели читает общие данные, а Python каждого бота запускает самого бота.
 Не копируйте для этого чужие venv и не меняйте рабочий интерпретатор бота.
+
+В окружении бота можно установить `"telegram-bot-control[aiogram]"`, чтобы добавить
+также aiogram. Для установки без PyPI доступен wheel в GitHub Release.
 
 ## Как добавить aiogram-бота
 

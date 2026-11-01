@@ -1,8 +1,14 @@
 # Telegram Bot Control
 
 Готовые сборки: [GitHub Releases](https://github.com/olegoleg1111121/telegram-bot-control/releases).
-Python-библиотека устанавливается из wheel без Node.js; для PyPI подготовлена
-публикация через GitHub Actions. [Установка и настройка PyPI](docs/pypi.ru.md).
+Библиотека опубликована в [PyPI](https://pypi.org/project/telegram-bot-control/):
+
+```sh
+python -m pip install "telegram-bot-control[aiogram]"
+```
+
+Для панели без aiogram: `python -m pip install telegram-bot-control`.
+Node.js для установки не нужен. [Установка и публикация](docs/pypi.ru.md).
 
 **0.5.1:** подробный вывод команды запуска и подготовительных шагов: traceback
 виден и при ошибке до подключения SDK. Значения секретных переменных маскируются.

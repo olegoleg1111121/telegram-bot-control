@@ -1,5 +1,28 @@
 # Validation record
 
+## First public release — 2026-11-01
+
+[GitHub CI](https://github.com/olegoleg1111121/telegram-bot-control/actions/runs/41306619096)
+passed all seven jobs: Python 3.11/3.12 on Windows and Ubuntu 24.04, desktop controls
+and onboarding/browser flows on both operating systems, and package/code quality.
+
+[Release builds](https://github.com/olegoleg1111121/telegram-bot-control/actions/runs/41307136551)
+produced Windows setup, Linux AppImage, wheel, source distribution and tagged source.
+The GitHub-built Python archives were downloaded, checked against SHA256SUMS and
+scanned for private paths and credentials. The wheel installed into an isolated
+environment and reported `tgbots 0.5.1`. A Windows portable ZIP with upstream license
+notices was added to the public preview release with its SHA256 digest.
+
+This validates hosted Linux execution, not a physical Termux device or a real SSH
+connection to the intended production server.
+
+[PyPI publication](https://github.com/olegoleg1111121/telegram-bot-control/actions/runs/41307728202)
+completed through the configured OIDC trusted publisher. A clean virtualenv then
+installed `telegram-bot-control[aiogram]==0.5.1` directly from pypi.org with cache
+disabled. Imports resolved to site-packages, not the editable checkout; the published
+SDK processed an offline aiogram pipeline, persisted statistics/errors/logs, served
+its bundled web assets and reported `tgbots 0.5.1`.
+
 ## Startup diagnostics fix 0.5.1
 
 All 56 Python tests and 7 Node tests passed on local Windows. New cases cover
