@@ -1,0 +1,7 @@
+{
+  "statistics_days": 365,
+  "errors_days": 30,
+  "diagnostics_days": 7,
+  "heartbeat_seconds": 10,
+  "connection_timeout_seconds": 30
+}

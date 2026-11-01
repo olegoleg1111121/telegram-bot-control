@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python ${{ matrix.python }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+        python: ["3.11", "3.12"]
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        id: python
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e '.[dev]'
+      - name: Test SDK, complex launches and release checks
+        run: |
+          $env:BOTCONTROL_TEST_POWERSHELL = (Get-Process -Id $PID).Path
+          python -m pytest -q
+
+  desktop:
+    name: Desktop / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      PYTHONUTF8: "1"
+      ELECTRON_DISABLE_SANDBOX: "1" # CI/Xvfb only; production keeps its sandbox settings.
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        id: python
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 11.25.0
+          run_install: false
+      - run: python -m pip install -e '.[dev]'
+      - run: pnpm install --dir desktop --frozen-lockfile
+      - name: Select the installed Python for the desktop bridge
+        run: |
+          $python = python -c 'import sys; print(sys.executable)'
+          "BOTCONTROL_PYTHON=$python" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - run: pnpm --dir desktop run test
+      - run: pnpm --dir desktop run format:check
+      - run: pnpm --dir desktop run build
+      - name: Prepare an isolated aiogram fixture
+        run: python scripts/control_fixture.py --data-dir .test-data/ui-controls --project-dir '.test-data/Complex UI bot'
+      - name: Exercise real Start, Restart and Stop buttons
+        run: |
+          $env:BOTCONTROL_HOME = Join-Path $PWD '.test-data/ui-controls'
+          if ($IsLinux) { xvfb-run -a pnpm --dir desktop run smoke:control }
+          else { pnpm --dir desktop run smoke:control }
+          exit $LASTEXITCODE
+      - name: Check first-run guide and desktop lifecycle
+        run: |
+          $env:BOTCONTROL_HOME = Join-Path $PWD '.test-data/ui-experience'
+          if ($IsLinux) { xvfb-run -a pnpm --dir desktop run smoke:experience }
+          else { pnpm --dir desktop run smoke:experience }
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ui-evidence-${{ runner.os }}
+          path: desktop/test-output/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+  quality:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        id: python
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e '.[dev,release]'
+      - run: ruff check src scripts tests examples
+      - run: ruff format --check src scripts tests examples
+      - run: python scripts/release_check.py
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 11.25.0
+          run_install: false
+      - run: pnpm install --dir desktop --frozen-lockfile
+      - run: pnpm --dir desktop run build
+      - run: python -m build --outdir dist
+      - run: python -m twine check dist/*

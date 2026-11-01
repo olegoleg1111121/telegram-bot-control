@@ -1,0 +1,16 @@
+include LICENSE README.md README.ru.md README.pypi.md THIRD_PARTY_NOTICES.md AUTHORS.md
+include requirements-dev.lock
+recursive-include src *.py
+recursive-include src/telegram_bot_control/web_assets *.html *.js *.css *.woff2 *.png *.svg *.txt
+recursive-include examples *.py *.ps1 *.json *.toml
+recursive-include scripts *.py *.ps1
+recursive-include tests *.py
+recursive-include docs *.md
+prune .git
+prune .local-tools
+prune .test-data
+prune .venv
+prune .pnpm-store
+prune desktop
+prune release
+global-exclude __pycache__ *.py[cod] *.sqlite3 *.sqlite3-wal *.sqlite3-shm *.db .env .env.* *.log

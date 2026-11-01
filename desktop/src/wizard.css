@@ -1,0 +1,141 @@
+.project-wizard {
+  width: min(760px, calc(100vw - 32px));
+  max-height: calc(100vh - 40px);
+  padding: 0;
+  border: 1px solid #334157;
+  border-radius: 16px;
+  background: #141a25;
+  color: #e3eaf4;
+  box-shadow: 0 25px 100px #000a;
+}
+.project-wizard::backdrop {
+  background: #060a12c9;
+  backdrop-filter: blur(5px);
+}
+.project-wizard form {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 42px);
+}
+.wizard-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 8px;
+}
+.wizard-top span {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #94a3b8;
+}
+.wizard-steps {
+  display: flex;
+  gap: 20px;
+  padding: 12px 24px;
+  font-size: 11px;
+  color: #64748b;
+}
+.wizard-steps .active {
+  color: #72dfbd;
+}
+.wizard-steps .complete {
+  color: #adbecf;
+}
+.project-wizard h1 {
+  font-size: 23px;
+  font-weight: 550;
+  margin: 10px 24px 16px;
+}
+.wizard-body {
+  overflow-y: auto;
+  padding: 0 24px 20px;
+}
+.wizard-body p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a2b0c4;
+}
+.wizard-body label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  margin: 16px 0;
+}
+.wizard-body .form-grid label {
+  margin: 6px 0;
+}
+.wizard-body label small {
+  line-height: 1.7;
+  color: #8d9cb1;
+}
+.wizard-body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 1.8;
+  background: #0c121d;
+  border: 1px solid #2a3548;
+  padding: 16px;
+  border-radius: 8px;
+}
+.wizard-body button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+}
+.wizard-tip {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid #2b384a;
+  background: #172130;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 18px;
+  color: #9ab2cd;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.wizard-tip svg {
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.wizard-tip p {
+  margin: 0;
+}
+.wizard-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-top: 1px solid #293549;
+}
+.wizard-footer button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+}
+@media (max-width: 520px) {
+  .wizard-top,
+  .wizard-steps,
+  .wizard-body,
+  .wizard-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .project-wizard h1 {
+    margin-left: 16px;
+    margin-right: 16px;
+    font-size: 20px;
+  }
+  .wizard-steps {
+    gap: 10px;
+    font-size: 9px;
+  }
+  .wizard-body .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

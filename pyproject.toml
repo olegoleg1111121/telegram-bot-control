@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "telegram-bot-control"
+version = "0.5.1"
+description = "Embedded bot telemetry with desktop and optional authenticated web dashboards."
+readme = {file = "README.pypi.md", content-type = "text/markdown"}
+requires-python = ">=3.11"
+dependencies = ["psutil>=7,<8"]
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Дмитрий Варг"}]
+keywords = ["telegram", "aiogram", "monitoring", "desktop", "sqlite"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Topic :: System :: Monitoring",
+]
+
+[project.optional-dependencies]
+aiogram = ["aiogram>=3.20,<4"]
+dev = ["aiogram>=3.20,<4", "pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.14,<1"]
+release = ["build>=1.2,<2", "twine>=6,<7"]
+
+[project.urls]
+Homepage = "https://github.com/olegoleg1111121/telegram-bot-control"
+Repository = "https://github.com/olegoleg1111121/telegram-bot-control"
+Documentation = "https://github.com/olegoleg1111121/telegram-bot-control/blob/main/README.ru.md"
+Issues = "https://github.com/olegoleg1111121/telegram-bot-control/issues"
+Changelog = "https://github.com/olegoleg1111121/telegram-bot-control/blob/main/CHANGELOG.md"
+
+[project.scripts]
+tgbots = "telegram_bot_control.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+telegram_bot_control = ["web_assets/*", "web_assets/**/*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

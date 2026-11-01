@@ -1,0 +1,38 @@
+# Архивный набросок, не входной файл версии 0.2.0.
+# Актуальные настройки — settings.json в общей папке данных,
+# образец — examples/settings.example.json. HTTP-агента нет.
+# Пути ниже — примеры для Windows; на Linux используются пути сервера.
+# Боты регистрируются автоматически. Разделы bots иллюстрируют метаданные,
+# предварительно вручную добавлять их для подключения не требуется.
+
+[agent]
+host = "127.0.0.1"
+port = 8765
+
+[storage]
+path = 'C:\BotControl\data\events.sqlite3'
+
+[retention]
+statistics_days = 365
+errors_days = 30
+diagnostics_days = 7
+
+[monitoring]
+heartbeat_seconds = 10
+connection_timeout_seconds = 30
+
+[desktop]
+language = "ru"
+theme = "dark"
+
+[[bots]]
+id = "support"
+name = "Бот поддержки"
+directory = 'C:\Bots\support-bot'
+entrypoint = 'C:\Bots\support-bot\main.py'
+
+[[bots]]
+id = "shop"
+name = "Бот магазина"
+directory = 'C:\Bots\shop-bot'
+entrypoint = 'C:\Bots\shop-bot\main.py'

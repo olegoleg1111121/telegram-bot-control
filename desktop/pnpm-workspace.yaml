@@ -1,0 +1,6 @@
+# Flat paths also keep older Windows installer tools below MAX_PATH.
+nodeLinker: hoisted
+allowBuilds:
+  electron-winstaller: true
+  esbuild: true
+  sharp: true

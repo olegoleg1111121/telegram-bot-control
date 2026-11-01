@@ -1,0 +1,96 @@
+{
+  "name": "telegram-bot-control-desktop",
+  "version": "0.5.1",
+  "private": true,
+  "description": "Desktop monitoring and process control for aiogram bots",
+  "author": "Дмитрий Варг",
+  "license": "MIT",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "main": "electron/main.cjs",
+  "scripts": {
+    "postinstall": "node node_modules/electron/install.js",
+    "build": "tsc --noEmit && vite build && node scripts/sync-web-assets.cjs",
+    "start": "electron .",
+    "test": "node --test tests/*.test.cjs",
+    "smoke": "electron . --smoke-test",
+    "smoke:control": "electron . --control-smoke",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --publish never",
+    "format": "prettier --write src electron tests scripts *.json *.ts *.html",
+    "format:check": "prettier --check src electron tests scripts *.json *.ts *.html",
+    "icons": "node scripts/generate-icons.cjs",
+    "screenshots": "electron . --portfolio",
+    "smoke:experience": "electron . --experience-smoke"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^43.0.0",
+    "electron-builder": "^26.0.0",
+    "prettier": "3.9.10",
+    "sharp": "0.35.5",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "lucide-react": "^0.468.0",
+    "@fontsource-variable/inter": "5.3.0"
+  },
+  "build": {
+    "appId": "dev.telegram-bot-control.desktop",
+    "productName": "Telegram Bot Control",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "artifactName": "Telegram-Bot-Control-${version}-${os}-${arch}.${ext}",
+    "extraResources": [
+      {
+        "from": "../LICENSE",
+        "to": "PROJECT-LICENSE.txt"
+      },
+      {
+        "from": "../THIRD_PARTY_NOTICES.md",
+        "to": "THIRD_PARTY_NOTICES.md"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "runAfterFinish": false,
+      "license": "../LICENSE",
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "Telegram Bot Control"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Development",
+      "icon": "assets/icon.png",
+      "maintainer": "Дмитрий Варг"
+    },
+    "electronLanguages": [
+      "en-US",
+      "ru"
+    ]
+  }
+}
