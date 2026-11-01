@@ -12,6 +12,7 @@ import secrets
 import sys
 import threading
 import time
+import webbrowser
 from http.cookies import SimpleCookie, CookieError
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -79,7 +80,17 @@ class DashboardServer(ThreadingHTTPServer):
         self.sessions: dict[str, float] = {}
         self.failures: dict[str, tuple[int, float]] = {}
         self.guard = threading.RLock()
+        self.launch_hash: bytes | None = None
+        self.launch_expires = 0.0
         super().__init__((host, port), DashboardHandler)
+
+    def browser_url(self) -> str:
+        """A short-lived, single-use local launch capability, never the access key."""
+        token = secrets.token_urlsafe(32)
+        with self.guard:
+            self.launch_hash = hashlib.sha256(token.encode()).digest()
+            self.launch_expires = time.monotonic() + 60
+        return f"http://127.0.0.1:{self.server_port}/#launch={token}"
 
     def authenticated(self, cookie: str | None) -> bool:
         try:
@@ -198,6 +209,23 @@ class DashboardHandler(BaseHTTPRequestHandler):
         path = urlsplit(self.path).path
         if path == "/api/login":
             return self.login(data)
+        if path == "/api/launch":
+            with self.server.guard:
+                token = data.get("token", "")
+                good = (
+                    self.client_address[0] == "127.0.0.1"
+                    and isinstance(token, str)
+                    and self.server.launch_hash is not None
+                    and self.server.launch_expires > time.monotonic()
+                    and hmac.compare_digest(
+                        hashlib.sha256(token.encode()).digest(), self.server.launch_hash
+                    )
+                )
+                if not good:
+                    return self.reply(401, {"error": "Launch link expired or already used"})
+                self.server.launch_hash = None
+                self.server.launch_expires = 0
+                return self.create_session()
         if not self.server.authenticated(self.headers.get("Cookie")):
             return self.reply(401, {"error": "Sign in required"})
         if path == "/api/logout":
@@ -246,6 +274,11 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     self.server.failures[address] = (count + 1, expires)
                 return self.reply(401, {"error": "Invalid access key"})
             self.server.failures.pop(address, None)
+            return self.create_session()
+
+    def create_session(self):
+        now = time.monotonic()
+        with self.server.guard:
             self.server.sessions = {
                 key: expires for key, expires in self.server.sessions.items() if expires > now
             }
@@ -261,8 +294,26 @@ class DashboardHandler(BaseHTTPRequestHandler):
         )
 
 
-def run(directory: Path, host: str, port: int, *, child: bool = False) -> int:
-    server = DashboardServer(directory, host, port, access_key=os.environ.get("BOTCONTROL_WEB_KEY"))
+def run(
+    directory: Path, host: str, port: int, *, child: bool = False, open_browser: bool = False
+) -> int:
+    try:
+        try:
+            server = DashboardServer(
+                directory, host, port, access_key=os.environ.get("BOTCONTROL_WEB_KEY")
+            )
+        except OSError:
+            if not open_browser or host != "127.0.0.1" or not port:
+                raise
+            server = DashboardServer(
+                directory, host, 0, access_key=os.environ.get("BOTCONTROL_WEB_KEY")
+            )
+    except (OSError, ValueError) as error:
+        print(
+            f"Не удалось открыть панель / Could not start dashboard: {redact(str(error))}",
+            file=sys.stderr,
+        )
+        return 1
     info = {
         "running": True,
         "host": host,
@@ -280,9 +331,24 @@ def run(directory: Path, host: str, port: int, *, child: bool = False) -> int:
         threading.Thread(target=watch_parent, daemon=True).start()
     else:
         print(
-            f"Web dashboard: {info['url']}\nAccess key: {info['key']}\nPress Ctrl+C to stop.",
+            f"Панель / Dashboard: {info['url']}\nКлюч доступа / Access key: {info['key']}\nДля остановки нажмите Ctrl+C / Press Ctrl+C to stop.",
             flush=True,
         )
+        if open_browser:
+            launch_url = server.browser_url()
+
+            def browse():
+                try:
+                    if webbrowser.open(launch_url, new=2):
+                        return
+                except Exception:
+                    pass
+                print(
+                    "Откройте адрес панели вручную и введите ключ из терминала / Open the dashboard URL manually and enter its access key.",
+                    flush=True,
+                )
+
+            threading.Thread(target=browse, daemon=True).start()
     try:
         server.serve_forever(poll_interval=0.2)
     except KeyboardInterrupt:

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.0 — 2026-11-01
+
+- Launch the bundled browser dashboard with bare `tgbots` or `python -m telegram_bot_control`.
+- Automatically open the browser with a single-use loopback sign-in; keep normal owner authentication.
+- Use the current interpreter and default data directory without manual setup; retain `desktop` as an optional mode.
+- Discover desktop Python runtimes through Windows registrations, launcher, installation directories and PATH.
+- Show runtime/SDK readiness, native path pickers and actionable modal connection errors.
+- Detect Python paths entered as data directories and offer a one-click correction.
+- Add Windows/Linux Python 3.14 checks.
+
 ## 0.6.1 — 2026-11-01
 
 - Rewrite installation around ready-made Windows downloads and two-command browser setup.

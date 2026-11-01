@@ -45,7 +45,7 @@ test('desktop reads a genuine Python bridge through child-process pipes', async 
     assert.deepEqual(first.bots, []);
     assert.equal(second.meta.data_dir, directory);
     await assert.rejects(client.request('unknown'), /Unknown method/);
-    assert.equal((await client.request('hello')).version, '0.6.1');
+    assert.equal((await client.request('hello')).version, '0.7.0');
   } finally {
     client.close();
   }

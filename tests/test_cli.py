@@ -56,3 +56,26 @@ def test_invalid_override_returns_install_help_instead_of_traceback(tmp_path, mo
     monkeypatch.setattr(cli.subprocess, "Popen", fail)
     assert cli.launch_desktop(tmp_path) == 1
     assert "Traceback" not in capsys.readouterr().err
+
+
+def test_bare_command_opens_browser_using_own_runtime_and_default_directory(tmp_path, monkeypatch):
+    from telegram_bot_control import web
+
+    called = []
+    monkeypatch.setenv("BOTCONTROL_HOME", str(tmp_path))
+    monkeypatch.setattr(web, "run", lambda *args, **kwargs: called.append((args, kwargs)) or 0)
+    assert cli.main([]) == 0
+    assert called == [((tmp_path, "127.0.0.1", 8765), {"open_browser": True})]
+    called.clear()
+    assert cli.main(["open", "--data-dir", str(tmp_path), "--port", "9000", "--no-browser"]) == 0
+    assert called == [((tmp_path, "127.0.0.1", 9000), {"open_browser": False})]
+
+
+def test_help_does_not_start_a_server(monkeypatch):
+    import pytest
+    from telegram_bot_control import web
+
+    monkeypatch.setattr(web, "run", lambda *_args, **_kwargs: pytest.fail("Help started a server"))
+    with pytest.raises(SystemExit) as stopped:
+        cli.main(["--help"])
+    assert stopped.value.code == 0

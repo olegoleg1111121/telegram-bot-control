@@ -21,6 +21,24 @@ async function api(path: string, body?: unknown) {
 }
 const rpc = async (method: string, params = {}) =>
   (await api('/api/rpc', { method, params })).result;
+let initialSession: Promise<{ authenticated: boolean; version: string }> | undefined;
+function loadSession() {
+  if (!initialSession) {
+    const token = new URLSearchParams(location.hash.slice(1)).get('launch');
+    if (token) history.replaceState(null, '', location.pathname + location.search);
+    initialSession = (async () => {
+      if (token) {
+        try {
+          await api('/api/launch', { token });
+        } catch {
+          /* Manual owner-key login remains available. */
+        }
+      }
+      return api('/api/session');
+    })();
+  }
+  return initialSession;
+}
 function webClient(version: string): Window['botControl'] {
   const unsupported = async () => {
     throw new Error('Manage the web listener from the server or desktop settings.');
@@ -75,6 +93,8 @@ function webClient(version: string): Window['botControl'] {
       } as Profile;
     },
     connect: unsupported,
+    discoverPython: unsupported,
+    choosePath: unsupported,
     previewRetention: (settings) => rpc('preview_retention', { settings }),
     saveSettings: (settings, confirmCleanup) =>
       rpc('save_settings', { settings, confirm_cleanup: confirmCleanup }),
@@ -106,7 +126,7 @@ export default function WebRoot() {
   useEffect(() => {
     let active = true;
     unauthorized = () => setAuthenticated(false);
-    api('/api/session')
+    loadSession()
       .then((session) => {
         if (!active) return;
         setVersion(session.version);

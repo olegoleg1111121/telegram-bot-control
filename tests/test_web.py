@@ -1,10 +1,12 @@
 import http.client
 import json
 import threading
+import time
+from urllib.parse import urlsplit, parse_qs
 
 import pytest
 
-from telegram_bot_control.web import DashboardServer
+from telegram_bot_control.web import DashboardServer, DashboardHandler
 
 
 @pytest.fixture
@@ -83,6 +85,40 @@ def test_wrong_key_and_login_rate_limit(web):
     for _ in range(10):
         assert request(web, "/api/login", {"key": "incorrect"})[0] == 401
     assert request(web, "/api/login", {"key": "incorrect"})[0] == 429
+
+
+def test_one_time_browser_launch_requires_valid_origin_and_cannot_be_replayed(web):
+    url = web.browser_url()
+    token = parse_qs(urlsplit(url).fragment)["launch"][0]
+    assert urlsplit(url).query == "" and token != web.access_key
+    assert 0 < web.launch_expires - time.monotonic() <= 60
+    assert request(web, "/api/launch", {"token": token}, origin="https://other.example")[0] == 403
+    assert request(web, "/api/launch", {"token": "wrong"})[0] == 401
+    code, headers, body = request(web, "/api/launch", {"token": token})
+    assert code == 200 and "HttpOnly" in headers["Set-Cookie"]
+    cookie = headers["Set-Cookie"].split(";", 1)[0]
+    assert request(web, "/api/rpc", {"method": "snapshot"}, cookie=cookie)[0] == 200
+    assert token.encode() not in body and web.access_key.encode() not in body
+    assert request(web, "/api/launch", {"token": token})[0] == 401
+
+
+def test_expired_launch_and_remote_address_keep_normal_authentication(web):
+    token = parse_qs(urlsplit(web.browser_url()).fragment)["launch"][0]
+    web.launch_expires = time.monotonic() - 1
+    assert request(web, "/api/launch", {"token": token})[0] == 401
+    assert request(web, "/api/rpc", {"method": "snapshot"})[0] == 401
+    token = parse_qs(urlsplit(web.browser_url()).fragment)["launch"][0]
+
+    class RemoteAddressHandler(DashboardHandler):
+        def setup(self):
+            super().setup()
+            self.client_address = ("192.0.2.10", self.client_address[1])
+
+    web.RequestHandlerClass = RemoteAddressHandler
+    assert request(web, "/api/launch", {"token": token})[0] == 401
+    web.RequestHandlerClass = DashboardHandler
+    assert request(web, "/api/launch", {"token": token})[0] == 200
+    assert login(web)  # The normal owner-key login remains available.
 
 
 def test_web_bind_validation(tmp_path):

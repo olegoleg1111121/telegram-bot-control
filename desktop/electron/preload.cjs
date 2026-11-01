@@ -21,6 +21,8 @@ contextBridge.exposeInMainWorld('botControl', {
   snapshot: (params) => ipcRenderer.invoke('control:snapshot', params),
   connection: () => ipcRenderer.invoke('control:connection'),
   connect: (profile) => ipcRenderer.invoke('control:connect', profile),
+  discoverPython: (force = false) => ipcRenderer.invoke('control:discover-python', force),
+  choosePath: (kind) => ipcRenderer.invoke('control:choose-path', kind),
   previewRetention: (settings) => ipcRenderer.invoke('control:preview-retention', settings),
   saveSettings: (settings, confirmCleanup) =>
     ipcRenderer.invoke('control:save-settings', settings, confirmCleanup),

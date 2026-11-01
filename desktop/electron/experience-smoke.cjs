@@ -73,8 +73,34 @@ async function run(window, root, { app, lifecycle }) {
   await waitFor(
     'document.querySelector("[data-testid=connection-result]").classList.contains("error")',
   );
+  await waitFor('document.querySelector("[data-testid=connection-problem][open]") !== null');
+  assert.ok(
+    await evaluate(
+      'document.querySelector("#connection-problem-title").textContent.includes("Python")',
+    ),
+  );
+  await click('problem-dismiss');
   assert.equal((await evaluate('window.botControl.connection()')).python, valid.python);
   assert.ok((await evaluate('window.botControl.snapshot({since:0})')).bots);
+  await click('find-python');
+  await waitFor('document.querySelector("[data-testid=python-candidates] option") !== null');
+  await setInput('connection-data', valid.python);
+  await click('connection-test');
+  await waitFor('document.querySelector("[data-testid=fix-python-fields]") !== null');
+  await evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  await delay(200);
+  fs.writeFileSync(
+    path.join(output, 'connection-path-error.png'),
+    (await window.webContents.capturePage()).toPNG(),
+  );
+  await click('fix-python-fields');
+  await waitFor('document.querySelector("[data-testid=connection-problem]") === null');
+  assert.equal(
+    await evaluate('document.querySelector("[data-testid=connection-python]").value'),
+    valid.python,
+  );
+  assert.equal(await evaluate('document.querySelector("[data-testid=connection-data]").value'), '');
+  await setInput('connection-data', valid.dataDir);
   await setInput('connection-python', valid.python);
   await click('connection-test');
   await waitFor(
@@ -120,6 +146,7 @@ async function run(window, root, { app, lifecycle }) {
   }
   const saved = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), 'desktop.json')));
   await require('./web-smoke.cjs').run(window, root);
+  await require('./quickstart-smoke.cjs').run(root, valid.python);
   await click('nav-integration');
   await waitFor('document.querySelector("[data-testid=ai-prompt]") !== null');
   await click('copy-ai-prompt');

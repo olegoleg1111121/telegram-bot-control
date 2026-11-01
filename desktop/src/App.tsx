@@ -35,6 +35,8 @@ import BotDiagnostics from './BotDiagnostics';
 import ProjectWizard from './ProjectWizard';
 import ActionAnalytics from './ActionAnalytics';
 import AiIntegration from './AiIntegration';
+import ConnectionProblem from './ConnectionProblem';
+import type { ConnectionProblem as Problem } from './types';
 import { isoDay, periodWindow } from './time';
 
 type Lang = 'ru' | 'en';
@@ -77,6 +79,7 @@ export default function App() {
   const [draft, setDraft] = useState<Settings | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [notice, setNotice] = useState('');
+  const [connectionProblem, setConnectionProblem] = useState<Problem | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirm, setConfirm] = useState<{
     settings: Settings;
@@ -264,12 +267,17 @@ export default function App() {
     setSaving(true);
     setNotice('');
     try {
-      await window.botControl.connect(profile);
+      const result = await window.botControl.connect(profile);
+      if (!result.ok) {
+        setConnectionProblem(result.error);
+        return false;
+      }
+      setProfile(result.profile);
       setNotice(t('saved'));
       retry();
       return true;
     } catch (error) {
-      setNotice(String(error));
+      setConnectionProblem({ code: 'bridge_failed', details: String(error) });
       return false;
     } finally {
       setSaving(false);
@@ -1048,6 +1056,18 @@ export default function App() {
             chooseBot(id);
             setRevision((value) => value + 1);
           }}
+        />
+      )}
+      {connectionProblem && (
+        <ConnectionProblem
+          problem={connectionProblem}
+          language={language}
+          close={() => setConnectionProblem(null)}
+          usePython={(value) =>
+            setProfile((current) =>
+              current ? { ...current, python: value, dataDir: '' } : current,
+            )
+          }
         />
       )}
       {confirm && (

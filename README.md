@@ -5,43 +5,37 @@
 Панель состояния, статистики, логов и управления вашими aiogram-ботами.
 Один владелец, один Windows/Linux-сервер, сколько угодно подключённых ботов.
 
-## Установка на Windows
+## Установка и запуск
 
-**Для готовой программы достаточно Python 3.11+. Node.js, pnpm и Git устанавливать не нужно.**
-Если ваш бот уже запускается через `python main.py`, используйте этот же Python.
+Нужен Python 3.11 или новее. Установите пакет и откройте панель:
 
-1. Откройте PowerShell и установите библиотеку:
-
-   ```powershell
-   python -m pip install --upgrade telegram-bot-control
-   ```
-
-2. [Скачайте установщик Windows](https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.6.1/Telegram-Bot-Control-0.6.1-win-x64.exe).
-   Запустите скачанный `.exe` и завершите установку.
-3. Откройте **Telegram Bot Control** ярлыком на рабочем столе или из «Пуска».
-   В обучении выберите **Локально**, в поле Python укажите `python` и нажмите **Подключиться**.
-
-Если команда `python` не найдена, [установите Python для Windows](https://www.python.org/downloads/windows/)
-с доступом из терминала и заново откройте PowerShell. Проверьте `python --version`.
-Если бота вы запускаете через `py main.py`, в команде установки используйте
-`py -m pip install --upgrade telegram-bot-control`.
-
-[Подробно: установка и подключение первого бота](docs/getting-started.ru.md).
-[Все сборки: Windows portable и Linux AppImage](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.6.1).
-
-## Самый короткий вариант — панель в браузере
-
-Работает без отдельного приложения. На Windows в PowerShell:
-
-```powershell
+```sh
 python -m pip install --upgrade telegram-bot-control
-python -m telegram_bot_control web --port 8765
+tgbots
 ```
 
-На Linux используйте `python3` вместо `python` в обеих командах.
-Откройте **http://127.0.0.1:8765** в браузере и введите ключ, показанный в терминале.
-Оставьте терминал открытым. `Ctrl+C` остановит панель; сами боты продолжат работать.
-[Termux и доступ с другого устройства](docs/web-panel.ru.md).
+Панель сама откроется в браузере. Python и папка статистики выбираются автоматически;
+при локальном запуске вход тоже выполняется автоматически. Оставьте терминал открытым.
+Для остановки панели нажмите `Ctrl+C` — боты продолжат работать.
+
+Если команда `tgbots` не найдена, выполните **`python -m telegram_bot_control`**.
+На Linux используйте `python3` вместо `python`; на Windows можно использовать `py`.
+Node.js, pnpm и отдельный установщик для этого способа не нужны.
+
+[Подключить первого бота](docs/getting-started.ru.md) · [Готовый промпт для ИИ](docs/ai-integration.ru.md).
+
+<details>
+<summary>Нужно отдельное окно приложения Windows?</summary>
+
+[Скачайте desktop-установщик](https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.7.0/Telegram-Bot-Control-0.7.0-win-x64.exe)
+и откройте ярлык. Приложение само ищет Python в установленных версиях Windows,
+стандартных папках и PATH. В списке видно, установлена ли библиотека. Если её нет,
+появится окно с командой установки для выбранного Python.
+Папку статистики обычно можно оставить пустой. Если перепутаны поля Python и папки,
+приложение предложит исправить их. Для открытия установленной версии из терминала:
+` tgbots desktop `.
+
+</details>
 
 ## Как добавить своего бота
 
@@ -89,7 +83,7 @@ python -m telegram_bot_control demo --bots 3
 Во втором терминале:
 
 ```sh
-python -m telegram_bot_control web --port 8765
+tgbots
 ```
 
 Откройте показанный адрес и введите ключ панели. Это синтетические события;

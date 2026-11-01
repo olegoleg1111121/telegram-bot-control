@@ -8,35 +8,24 @@
 Для готовой программы достаточно **Python 3.11+**. Node.js, pnpm, Git и сборка исходников не нужны.
 Используйте обычный Python, которым уже запускаете бота.
 
-### Отдельное приложение Windows
-
-1. В PowerShell установите библиотеку:
-
-   ```powershell
-   python -m pip install --upgrade telegram-bot-control
-   ```
-
-2. [Скачайте установщик Windows](https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.6.1/Telegram-Bot-Control-0.6.1-win-x64.exe)
-   и запустите его.
-3. Откройте **Telegram Bot Control** ярлыком. В обучении выберите **Локально**,
-   в поле Python введите `python` и нажмите **Подключиться**.
-
-Если бота запускаете через `py main.py`, устанавливайте пакет командой
-`py -m pip install --upgrade telegram-bot-control`. Если Python ещё нет,
-[скачайте его с python.org](https://www.python.org/downloads/windows/) и заново откройте PowerShell.
-
-### Самый короткий вариант — в браузере
-
-Установите пакет и запустите панель:
+### Установка и запуск
 
 ```sh
 python -m pip install --upgrade telegram-bot-control
-python -m telegram_bot_control web --port 8765
+tgbots
 ```
 
-На Linux используйте **python3** вместо **python** в обеих командах.
-Откройте **http://127.0.0.1:8765**, введите ключ из терминала и оставьте терминал открытым.
-`Ctrl+C` остановит панель. [Termux и доступ из сети](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/web-panel.ru.md).
+**Панель сама откроется в браузере.** Python, стандартная папка данных и локальный
+вход определяются автоматически. Оставьте терминал открытым; `Ctrl+C` остановит
+панель, а боты продолжат работать.
+
+Если `tgbots` не найден, выполните **`python -m telegram_bot_control`**.
+На Linux используйте `python3`; на Windows также можно использовать `py`.
+Нужен Python 3.11+. Node.js, pnpm и отдельный установщик для этого способа не нужны.
+
+[Отдельное desktop-окно Windows — дополнительный вариант](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0).
+В нём есть автоматический поиск Python и окно ошибки с конкретным способом исправления.
+[Termux и доступ из сети](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/web-panel.ru.md).
 
 ### Как добавить бота
 
@@ -71,7 +60,7 @@ dp.update.outer_middleware(monitor.middleware())
 `python -m pip install "telegram-bot-control[aiogram]"`.
 Веб-интерфейс и шрифты с кириллицей уже включены в пакет.
 
-[Все готовые сборки](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.6.1)
+[Все готовые сборки](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0)
 · [События и аналитика](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/actions.ru.md)
 · [Разработка из исходников](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/development.ru.md).
 
@@ -83,25 +72,20 @@ Monitor and control existing aiogram bots on Windows/Linux. **Python 3.11+** is 
 for the ready-made application; Node.js, pnpm and a source build are not required.
 Use the same Python that already runs your bot.
 
-### Windows desktop
-
-```powershell
-python -m pip install --upgrade telegram-bot-control
-```
-
-[Download the Windows installer](https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.6.1/Telegram-Bot-Control-0.6.1-win-x64.exe),
-run it and open its desktop/Start menu shortcut. Choose Local, enter `python` and click Connect.
-If your bot uses `py main.py`, install through `py -m pip` instead.
-
-### Browser setup
+### Install and launch
 
 ```sh
 python -m pip install --upgrade telegram-bot-control
-python -m telegram_bot_control web --port 8765
+tgbots
 ```
 
-Use `python3` on Linux. Open **http://127.0.0.1:8765**, enter the terminal access key
-and keep that terminal open. Ctrl+C stops the dashboard.
+The bundled dashboard opens in your browser and signs in locally. It uses the launching
+Python and the owner's default directory without manual configuration. Keep the terminal
+open; Ctrl+C stops the dashboard. If `tgbots` is not on PATH, use
+**`python -m telegram_bot_control`**. Use `python3` on Linux or `py` on Windows as needed.
+
+The [optional desktop application](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0)
+includes automatic Python discovery, SDK checks and actionable connection error dialogs.
 
 ### Connect an existing bot
 
@@ -123,7 +107,7 @@ bounded restarts, Russian/English UI, onboarding and configurable retention.
 The base dependency is psutil. Use `[aiogram]` only if aiogram is not already installed.
 The browser UI and local fonts are bundled in the Python package.
 
-[Downloads](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.6.1)
+[Downloads](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0)
 · [Source development setup](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/development.en.md).
 
 Early preview for one trusted owner. History starts at SDK integration. Bots sharing

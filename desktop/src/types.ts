@@ -17,6 +17,25 @@ export type Profile = {
   port: number;
   keyPath: string;
 };
+export type PythonCandidate = {
+  executable: string;
+  version: string;
+  compatible: boolean;
+  sdk: boolean;
+  sdkVersion: string;
+  pip: boolean;
+  virtual: boolean;
+  source: string;
+};
+export type PythonDiscovery = { candidates: PythonCandidate[]; recommended: string };
+export type ConnectionProblem = {
+  code: string;
+  details?: string;
+  python?: string;
+  installCommand?: string;
+};
+export type ConnectionResult =
+  { ok: true; profile: Profile; hello: unknown } | { ok: false; error: ConnectionProblem };
 export type DesktopInfo = {
   runtime?: 'desktop' | 'web';
   guideSeenVersion: number;
@@ -239,7 +258,9 @@ declare global {
       onOpenGuide(callback: () => void): () => void;
       snapshot(params: SnapshotParams): Promise<Snapshot>;
       connection(): Promise<Profile>;
-      connect(profile: Profile): Promise<unknown>;
+      connect(profile: Profile): Promise<ConnectionResult>;
+      discoverPython(force?: boolean): Promise<PythonDiscovery>;
+      choosePath(kind: 'python' | 'directory'): Promise<string>;
       previewRetention(settings: Settings): Promise<Record<string, number>>;
       saveSettings(settings: Settings, confirmCleanup: boolean): Promise<unknown>;
       launchProfile(

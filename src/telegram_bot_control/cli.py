@@ -96,12 +96,13 @@ def main(argv: list[str] | None = None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(
-        prog="tgbots", description="Telegram Bot Control — embedded telemetry, no local server."
+        prog="tgbots", description="Telegram Bot Control — run tgbots to open your dashboard."
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = parser.add_subparsers(dest="command")
     for name, help_text in (
-        ("open", "Open the desktop application"),
+        ("open", "Open the dashboard in your browser"),
+        ("desktop", "Open the optional Electron desktop application"),
         ("status", "Read recorded bot status"),
         ("bridge", "Serve JSON lines on stdin/stdout"),
         ("demo", "Run an offline aiogram fixture"),
@@ -109,9 +110,10 @@ def main(argv: list[str] | None = None) -> int:
     ):
         child = sub.add_parser(name, help=help_text)
         child.add_argument("--data-dir", help="Shared local directory for this owner's bots")
-        if name == "web":
+        if name in ("web", "open"):
             child.add_argument("--port", type=int, default=8765)
             child.add_argument("--host", choices=("127.0.0.1", "0.0.0.0"), default="127.0.0.1")
+            child.add_argument("--no-browser", action="store_true", help="Do not open a browser")
         if name == "status":
             child.add_argument("--json", action="store_true")
         if name == "demo":
@@ -122,16 +124,22 @@ def main(argv: list[str] | None = None) -> int:
             child.add_argument("--bots", type=int, default=1)
     args = parser.parse_args(argv)
     if args.command is None:
-        parser.print_help()
-        return 0
+        from .web import run
+
+        return run(data_directory(), "127.0.0.1", 8765, open_browser=True)
     directory = data_directory(args.data_dir)
-    if args.command == "web":
+    if args.command in ("web", "open"):
         from .web import run
 
         if not 1 <= args.port <= 65535:
             parser.error("port must be between 1 and 65535")
-        return run(directory, args.host, args.port)
-    if args.command == "open":
+        return run(
+            directory,
+            args.host,
+            args.port,
+            open_browser=args.command == "open" and not args.no_browser,
+        )
+    if args.command == "desktop":
         return launch_desktop(directory, force_local=args.data_dir is not None)
     if args.command == "bridge":
         from .bridge import serve

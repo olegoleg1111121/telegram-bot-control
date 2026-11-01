@@ -1,9 +1,16 @@
-const { app, BrowserWindow, ipcMain, Menu, clipboard, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, clipboard, shell, dialog } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const { BridgeClient, commandFor } = require('./bridge-client.cjs');
 const { preferences, connectionProfile, defaultPython } = require('./desktop-state.cjs');
 const { createLifecycle } = require('./window-lifecycle.cjs');
+const {
+  discoverPythons,
+  probePython,
+  installationCommand,
+  validateDataDirectory,
+  alias,
+} = require('./python-discovery.cjs');
 
 const root = path.resolve(__dirname, '../..');
 const portfolio = process.argv.includes('--portfolio');
@@ -39,6 +46,18 @@ let connecting;
 let desktopState;
 let lifecycle;
 let connectionAttempt = 0;
+let pythonDiscovery;
+let discoveryTime = 0;
+function findPythons(force = false) {
+  if (!pythonDiscovery || force || Date.now() - discoveryTime > 60000) {
+    discoveryTime = Date.now();
+    pythonDiscovery = discoverPythons({
+      root,
+      preferred: [profile?.python, defaultPython(root, process.platform, process.env)],
+    });
+  }
+  return pythonDiscovery;
+}
 const primary =
   smoke && !experienceSmoke && !experienceSecond ? true : app.requestSingleInstanceLock();
 if (!primary) app.quit();
@@ -57,10 +76,35 @@ function defaultProfile() {
 async function connect(next) {
   commandFor(next); // Validate before disturbing a working connection.
   const attempt = ++connectionAttempt;
+  if (next.mode === 'local') {
+    validateDataDirectory(next.dataDir);
+    let python;
+    if (alias(next.python || 'python')) {
+      const found = await findPythons();
+      const chosen = found.candidates.find((item) => item.executable === found.recommended);
+      python = chosen ? await probePython(chosen.executable, { platform: process.platform }) : null;
+    } else python = await probePython(next.python, { platform: process.platform });
+    if (!python)
+      throw Object.assign(new Error('No working Python found'), { code: 'python_missing' });
+    if (!python.compatible)
+      throw Object.assign(new Error(`Python ${python.version}`), {
+        code: 'python_unsupported',
+        python: python.executable,
+      });
+    if (!python.sdk)
+      throw Object.assign(new Error('SDK is not installed in this Python'), {
+        code: 'sdk_missing',
+        python: python.executable,
+        installCommand: installationCommand(python.executable, process.platform, python.pip),
+      });
+    next = { ...next, python: python.executable };
+  }
+  if (attempt !== connectionAttempt) throw new Error('Connection attempt superseded');
   const candidate = new BridgeClient(next);
   candidate.on('disconnected', () => {});
   try {
     const hello = await candidate.request('hello');
+    await candidate.request('snapshot', { since: Date.now() / 1000 - 1 });
     if (attempt !== connectionAttempt) throw new Error('Connection attempt superseded');
     const previous = client;
     client = candidate;
@@ -148,6 +192,17 @@ if (primary)
       });
     handle('control:snapshot', (params) => request('snapshot', params));
     handle('control:connection', () => profile);
+    handle('control:discover-python', (force) => findPythons(force === true));
+    handle('control:choose-path', async (kind) => {
+      if (!['python', 'directory'].includes(kind)) throw new Error('Invalid picker');
+      const result = await dialog.showOpenDialog(window, {
+        properties: [kind === 'python' ? 'openFile' : 'openDirectory'],
+        ...(kind === 'python' && process.platform === 'win32'
+          ? { filters: [{ name: 'Python', extensions: ['exe'] }] }
+          : {}),
+      });
+      return result.canceled ? '' : result.filePaths[0] || '';
+    });
     handle('web:status', () => request('web_status', {}));
     handle('web:start', (options) => request('web_start', options));
     handle('web:stop', () => request('web_stop', {}));
@@ -178,14 +233,26 @@ if (primary)
       clipboard.writeText(text);
     });
     handle('control:connect', async (next) => {
-      const result = await connect(next);
-      fs.mkdirSync(app.getPath('userData'), { recursive: true });
-      fs.writeFileSync(
-        path.join(app.getPath('userData'), 'connection.json'),
-        JSON.stringify(profile),
-        { mode: 0o600 },
-      );
-      return result;
+      try {
+        const result = await connect(next);
+        fs.mkdirSync(app.getPath('userData'), { recursive: true });
+        fs.writeFileSync(
+          path.join(app.getPath('userData'), 'connection.json'),
+          JSON.stringify(profile),
+          { mode: 0o600 },
+        );
+        return { ok: true, profile, hello: result };
+      } catch (error) {
+        return {
+          ok: false,
+          error: {
+            code: error.code || (next?.mode === 'ssh' ? 'ssh_failed' : 'bridge_failed'),
+            details: String(error.message || error).slice(0, 3000),
+            python: error.python || '',
+            installCommand: error.installCommand || '',
+          },
+        };
+      }
     });
     handle('control:preview-retention', (settings) => request('preview_retention', { settings }));
     handle('control:save-settings', (settings, confirmCleanup) =>

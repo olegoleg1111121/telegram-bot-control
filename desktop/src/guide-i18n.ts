@@ -24,7 +24,7 @@ export const guideRu = {
   webFinish:
     'Закрытие вкладки не останавливает веб-сервер и ботов. Кнопка «Выйти» завершает сеанс браузера. Сам сервер выключается в терминале или в настольных настройках веб-доступа.',
   connectionBody:
-    'Для этого Windows-компьютера выберите «Локально». Для Linux-сервера — SSH. Укажите Python с установленной библиотекой и одну общую папку данных для всех ботов.',
+    'Для этого компьютера выберите «Локально»: Python найдётся автоматически. Обычно папку статистики можно оставить пустой. SSH нужен для подключения к другому серверу.',
   connectionPython:
     'Для готового приложения нужен Python 3.11+ с пакетом telegram-bot-control. Если бот уже работает через python, используйте его. Node.js и pnpm для установки программы не нужны.',
   connectionOk: 'Подключение проверено. Настройки сохранены.',
@@ -94,7 +94,7 @@ export const guideEn: GuideTranslation = {
   webFinish:
     'Closing this tab keeps the server and bots running. Sign out ends this browser session. Stop the server in its terminal or in desktop web-access settings.',
   connectionBody:
-    'Choose Local for this Windows computer, or SSH for a Linux server. Select a Python environment with the SDK installed and one shared data directory for your bots.',
+    'Choose Local for this computer: Python is discovered automatically. The statistics directory can usually remain empty. Use SSH to connect to another server.',
   connectionPython:
     'The ready-made app requires Python 3.11+ with telegram-bot-control. Use the Python that already runs your bot. Node.js and pnpm are not needed to install the application.',
   connectionOk: 'Connection verified. Settings saved.',

@@ -4,39 +4,24 @@
 
 Monitor and control existing aiogram bots: one owner, one Windows/Linux server, many bots.
 
-## Install on Windows
+## Install and launch
 
-**Use Python 3.11+ and the ready-made application. Node.js, pnpm and Git are not required.**
-If your bot runs with `python main.py`, use that same Python:
-
-1. Open PowerShell and install the SDK:
-
-   ```powershell
-   python -m pip install --upgrade telegram-bot-control
-   ```
-
-2. [Download the Windows installer](https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.6.1/Telegram-Bot-Control-0.6.1-win-x64.exe) and run it.
-3. Open **Telegram Bot Control** from its desktop/Start menu shortcut.
-   Choose **Local**, enter `python` in the Python field and click **Connect**.
-
-If Python is missing, [install Python for Windows](https://www.python.org/downloads/windows/)
-and reopen PowerShell. Check `python --version`. If your bot runs with `py main.py`,
-install with `py -m pip install --upgrade telegram-bot-control`.
-
-[All downloads: Windows portable and Linux AppImage](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.6.1).
-
-## Quick browser mode
-
-No separate desktop application is needed:
+Python 3.11+ is required:
 
 ```sh
 python -m pip install --upgrade telegram-bot-control
-python -m telegram_bot_control web --port 8765
+tgbots
 ```
 
-On Linux, use `python3` in both commands. Open **http://127.0.0.1:8765** and enter
-its separate access key from the terminal. Keep the terminal open; Ctrl+C stops the dashboard.
-[Web/Termux and network access](docs/web-panel.ru.md).
+The bundled dashboard opens in your browser, signs in locally, and uses its own Python
+and the current owner's default data directory. Keep the terminal open; Ctrl+C stops
+the dashboard while bots continue running. If `tgbots` is not on PATH, use
+**`python -m telegram_bot_control`**. On Linux use `python3`; Windows also supports `py`.
+Node.js, pnpm and a separate desktop installer are unnecessary for this mode.
+
+The [optional desktop application](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0)
+automatically discovers installed Python runtimes and checks the SDK. Connection errors
+open a dialog with a specific fix. Use `tgbots desktop` to open the installed Electron app.
 
 ## Connect an existing bot
 
@@ -80,7 +65,7 @@ python -m telegram_bot_control demo --bots 3
 Second terminal:
 
 ```sh
-python -m telegram_bot_control web --port 8765
+tgbots
 ```
 
 Use `python3` on Linux. Open the displayed URL and enter the dashboard key.
