@@ -5,31 +5,16 @@
 Copy the task below into an assistant with access to your bot project.
 The same prompt is available in the dashboard’s **Connect with AI** page and project wizard.
 
-## Regular Python or venv
+## Before connecting
 
-A venv is **optional**. Use the interpreter that already runs the bot:
-
-```sh
-python -c "import sys; print(sys.executable)"
-python -m pip --version
-python -m pip install --upgrade "telegram-bot-control>=0.6.0"
-```
-
-If launching with `py -3.12`, install with `py -3.12 -m pip`.
-An existing venv does not need activation:
-
-```powershell
-& 'C:\Bots\my-bot\.venv\Scripts\python.exe' -m pip install --upgrade telegram-bot-control
-```
+Install the SDK in PowerShell or your bot's terminal:
 
 ```sh
-/srv/my-bot/.venv/bin/python -m pip install --upgrade telegram-bot-control
+python -m pip install --upgrade telegram-bot-control
 ```
 
-An existing aiogram project only needs the base SDK; use `[aiogram]` if aiogram is missing.
-If a Linux system Python rejects installation as externally managed (PEP 668),
-do not use sudo pip or `--break-system-packages`. Select an allowed user Python
-or agree on an isolated environment. This is an OS policy, not an SDK venv requirement.
+If your bot uses `py` or `python3`, use that instead of `python`.
+[Ready-made application and browser setup](../README.en.md).
 
 ## Copyable prompt
 

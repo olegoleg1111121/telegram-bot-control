@@ -13,11 +13,46 @@ from . import __version__
 from .config import data_directory
 
 
+def installed_desktop(root: Path, platform: str, env: dict[str, str]) -> str | None:
+    override = env.get("BOTCONTROL_DESKTOP")
+    if override:
+        path = Path(override).expanduser()
+        return str(path) if path.is_file() else shutil.which(override)
+    on_path = shutil.which("telegram-bot-control-desktop")
+    if on_path:
+        return on_path
+    candidates = []
+    if platform == "win32":
+        for key, suffix in (("LOCALAPPDATA", "Programs"), ("ProgramFiles", "")):
+            if env.get(key):
+                for name in ("Telegram Bot Control", "telegram-bot-control-desktop"):
+                    candidates.append(Path(env[key]) / suffix / name / "Telegram Bot Control.exe")
+        candidates.extend(
+            [
+                root / "release/desktop-build/win-unpacked/Telegram Bot Control.exe",
+                root / "desktop/release/win-unpacked/Telegram Bot Control.exe",
+            ]
+        )
+    return next((str(path) for path in candidates if path.is_file()), None)
+
+
+def desktop_help() -> None:
+    print(
+        "Приложение не найдено / Desktop application not found.\n"
+        "Скачайте готовый установщик / Download the ready-made app:\n"
+        f"https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v{__version__}\n"
+        "После установки откройте ярлык Telegram Bot Control.\n"
+        "Можно открыть панель в браузере / Or use the browser dashboard:\n"
+        "  python -m telegram_bot_control web --port 8765\n"
+        "Для нестандартного пути укажите BOTCONTROL_DESKTOP / Set BOTCONTROL_DESKTOP for a custom path.",
+        file=sys.stderr,
+    )
+
+
 def launch_desktop(directory: Path, *, force_local: bool = False) -> int:
     root = Path(__file__).resolve().parents[2]
     desktop = root / "desktop"
-    override = os.environ.get("BOTCONTROL_DESKTOP")
-    installed = override or shutil.which("telegram-bot-control-desktop")
+    installed = installed_desktop(root, sys.platform, dict(os.environ))
     if installed:
         command = [installed]
     else:
@@ -26,15 +61,12 @@ def launch_desktop(directory: Path, *, force_local: bool = False) -> int:
             / "node_modules/electron/dist"
             / ("electron.exe" if os.name == "nt" else "electron")
         )
-        if not binary.exists() or not (desktop / "dist/index.html").exists():
-            print(
-                "Install/build the desktop first: pnpm install --dir desktop; pnpm --dir desktop run build",
-                file=sys.stderr,
-            )
-            print(
-                "Or set BOTCONTROL_DESKTOP to the installed application executable.",
-                file=sys.stderr,
-            )
+        if (
+            os.environ.get("BOTCONTROL_DESKTOP")
+            or not binary.exists()
+            or not (desktop / "dist/index.html").exists()
+        ):
+            desktop_help()
             return 1
         command = [str(binary), str(desktop)]
     env = dict(
@@ -43,15 +75,19 @@ def launch_desktop(directory: Path, *, force_local: bool = False) -> int:
     if force_local:
         env["BOTCONTROL_FORCE_LOCAL"] = "1"
     flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-    subprocess.Popen(
-        command,
-        env=env,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        creationflags=flags,
-        start_new_session=os.name != "nt",
-    )
+    try:
+        subprocess.Popen(
+            command,
+            env=env,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=flags,
+            start_new_session=os.name != "nt",
+        )
+    except OSError:
+        desktop_help()
+        return 1
     print("Telegram Bot Control opened")
     return 0
 

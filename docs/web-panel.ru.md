@@ -10,7 +10,7 @@
 Боты продолжают работать. Для независимого режима используйте CLI:
 
 ```sh
-tgbots web --port 8765 --data-dir /srv/bot-control/data
+python -m telegram_bot_control web --port 8765
 ```
 
 Терминал покажет адрес `http://127.0.0.1:8765` и ключ входа. На этом же устройстве
@@ -26,30 +26,28 @@ Telegram. Сеанс браузера действует до восьми ча�
 
 ## Установка на Termux
 
-Для панели не нужны Electron, Node.js и aiogram. Базовый Python-пакет зависит от
-psutil. В Termux используйте адаптированный системный пакет `python-psutil`:
+В терминале Termux выполните:
 
 ```sh
 pkg install python python-psutil
-python -m venv --system-site-packages ~/botcontrol-panel
-~/botcontrol-panel/bin/python -m pip install /путь/telegram_bot_control-0.5.1-py3-none-any.whl
-~/botcontrol-panel/bin/tgbots web --port 8765 --data-dir "$HOME/bot-control/data"
+python -m pip install --upgrade telegram-bot-control
+python -m telegram_bot_control web --port 8765
 ```
 
-Откройте `http://127.0.0.1:8765` в браузере телефона. У ботов должна быть **та же
-папка данных**, а в их Python установлена библиотека. aiogram остаётся в окружении
-самих ботов; при необходимости доступен extra `aiogram`.
+Откройте **http://127.0.0.1:8765** в браузере телефона и введите ключ из терминала.
+Используется обычный Python Termux; путь к скачанному wheel искать не нужно.
+[python-psutil предоставляется самим Termux](https://github.com/termux/termux-packages/blob/master/packages/python-psutil/build.sh).
+Бот и панель должны использовать одну папку данных; по умолчанию это папка текущего
+владельца. Если у бота уже выбран другой `data_dir`, добавьте такой же `--data-dir`
+к команде запуска панели.
 
-Android может ограничивать фоновые процессы и доступ к процессам. Реальное целевое
-устройство требует отдельной проверки. Локально проверены Windows, HTTP-вход и
-мобильная ширина интерфейса; это не тест на Android.
+Android ограничивает фоновые процессы и доступ к процессам. Работа на физическом
+Android-устройстве отдельно не проверена; проверены HTTP-вход и мобильный интерфейс.
 
-## Сборка
+## Для изменения исходников
 
-`pnpm --dir desktop run build` собирает интерфейс и создаёт
-`src/telegram_bot_control/web_assets`. Генерируемая папка не хранится в Git, но
-включается в wheel и Python source distribution. Повторите сборку UI перед
-`python -m build`. При отсутствии веб-файлов CLI сообщает об этом.
+В готовом Python-пакете веб-интерфейс уже есть. Если меняете саму программу,
+следуйте [отдельной инструкции разработчика](development.ru.md).
 
 В браузере доступны статистика, ошибки и управление ботами. Папка и Python заданы
 сервером и из браузера не перенастраиваются. Ключ даёт права владельца панели:

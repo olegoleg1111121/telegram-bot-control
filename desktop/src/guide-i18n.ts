@@ -26,13 +26,13 @@ export const guideRu = {
   connectionBody:
     'Для этого Windows-компьютера выберите «Локально». Для Linux-сервера — SSH. Укажите Python с установленной библиотекой и одну общую папку данных для всех ботов.',
   connectionPython:
-    'Python устанавливается отдельно. Установите telegram-bot-control через Python самого бота. Поддерживается обычный Python и существующий venv; создавать окружение специально не требуется.',
+    'Для готового приложения нужен Python 3.11+ с пакетом telegram-bot-control. Если бот уже работает через python, используйте его. Node.js и pnpm для установки программы не нужны.',
   connectionOk: 'Подключение проверено. Настройки сохранены.',
   connectionIdle:
     'Нажмите «Подключиться», чтобы проверить Python и доступ к папке. Можно продолжить обучение и настроить подключение позже.',
   installTitle: 'Подключите библиотеку к боту',
   installBody:
-    'Установите пакет через тот же Python, которым запускается бот. Виртуальное окружение необязательно. Сохраните свои .env, логгер и роутеры. Готовое задание для помощника есть в разделе «Подключить с ИИ».',
+    'Откройте PowerShell или терминал на сервере бота и выполните команду ниже. Если ваш бот запускается через py или python3, замените python тем же способом. Существующие .env, логгер и роутеры менять не нужно.',
   installLabel: 'В терминале, используя Python вашего бота',
   installCommand: 'python -m pip install --upgrade telegram-bot-control',
   codeLabel: 'Внутри main(), после создания bot и dp',
@@ -96,13 +96,13 @@ export const guideEn: GuideTranslation = {
   connectionBody:
     'Choose Local for this Windows computer, or SSH for a Linux server. Select a Python environment with the SDK installed and one shared data directory for your bots.',
   connectionPython:
-    'Python is installed separately. Install telegram-bot-control through the bot’s own Python. Regular Python and existing venvs are supported; creating a venv is optional.',
+    'The ready-made app requires Python 3.11+ with telegram-bot-control. Use the Python that already runs your bot. Node.js and pnpm are not needed to install the application.',
   connectionOk: 'Connection verified. Settings saved.',
   connectionIdle:
     'Press Connect to check Python and the data directory. You may continue the guide and configure the connection later.',
   installTitle: 'Connect the SDK to your bot',
   installBody:
-    'Install using the Python that runs your bot. A venv is optional. Keep existing .env, logging and routers. The Connect with AI page includes a ready-to-copy integration task.',
+    'Open PowerShell or the terminal on your bot server and run the command below. If your bot uses py or python3, use that instead of python. Keep existing .env, logging and routers.',
   installLabel: 'In a terminal, using your bot’s Python',
   installCommand: 'python -m pip install --upgrade telegram-bot-control',
   codeLabel: 'Inside main(), after creating bot and dp',

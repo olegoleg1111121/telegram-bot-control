@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.1 — 2026-11-01
+
+- Rewrite installation around ready-made Windows downloads and two-command browser setup.
+- Move Node.js/pnpm and source builds into separate developer guides with official download links.
+- Remove checkout-specific environment paths from user walkthroughs and show how to locate the user's Python.
+- Detect installed Windows desktop applications and show download/browser help when the app is missing.
+- Simplify first-run onboarding and PyPI/AI integration instructions.
+
 ## 0.6.0 — 2026-11-01
 
 - Explicit `monitor.track_action` events and sync/async `@monitor.action` decorators.

@@ -103,6 +103,8 @@ export const ru = {
   localMode: 'Локально',
   sshMode: 'Linux по SSH',
   pythonPath: 'Python с установленной библиотекой',
+  pythonHelp:
+    'Обычно здесь достаточно python. Если Python несколько, скопируйте путь из команды ниже.',
   dataDir: 'Папка данных',
   defaultDir: 'По умолчанию для владельца',
   host: 'Адрес сервера',
@@ -240,6 +242,8 @@ export const en: Record<TranslationKey, string> = {
   localMode: 'Local',
   sshMode: 'Linux over SSH',
   pythonPath: 'Python with the library installed',
+  pythonHelp:
+    'Usually python is enough. With several interpreters, copy the path printed by the command below.',
   dataDir: 'Data directory',
   defaultDir: 'Owner’s default directory',
   host: 'Server address',

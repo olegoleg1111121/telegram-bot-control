@@ -49,7 +49,9 @@ def asset_directory() -> Path:
     if (checkout / "index.html").is_file():
         return checkout
     raise ValueError(
-        "Web assets are missing. Use the release wheel or build the desktop frontend first."
+        "Web files are missing. Reinstall the ready-made package: "
+        "python -m pip install --upgrade --force-reinstall telegram-bot-control. "
+        "Source development: https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/development.en.md"
     )
 
 

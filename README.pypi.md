@@ -4,161 +4,130 @@
 
 ## Русский
 
-Управление и мониторинг существующих Telegram-ботов на aiogram. Один владелец,
-один Windows/Linux-сервер, много ботов. Python SDK внутри бота, тёмная панель
-на русском/английском, отдельное desktop-приложение и необязательный веб-режим.
+Панель мониторинга и управления существующими aiogram-ботами на Windows/Linux.
+Для готовой программы достаточно **Python 3.11+**. Node.js, pnpm, Git и сборка исходников не нужны.
+Используйте обычный Python, которым уже запускаете бота.
 
-### Установка
+### Отдельное приложение Windows
 
-Python 3.11+. **Venv не обязателен**: используйте Python, которым бот уже запускается.
-Для существующего aiogram-проекта:
+1. В PowerShell установите библиотеку:
+
+   ```powershell
+   python -m pip install --upgrade telegram-bot-control
+   ```
+
+2. [Скачайте установщик Windows](https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.6.1/Telegram-Bot-Control-0.6.1-win-x64.exe)
+   и запустите его.
+3. Откройте **Telegram Bot Control** ярлыком. В обучении выберите **Локально**,
+   в поле Python введите `python` и нажмите **Подключиться**.
+
+Если бота запускаете через `py main.py`, устанавливайте пакет командой
+`py -m pip install --upgrade telegram-bot-control`. Если Python ещё нет,
+[скачайте его с python.org](https://www.python.org/downloads/windows/) и заново откройте PowerShell.
+
+### Самый короткий вариант — в браузере
+
+Установите пакет и запустите панель:
 
 ```sh
 python -m pip install --upgrade telegram-bot-control
+python -m telegram_bot_control web --port 8765
 ```
 
-Если aiogram ещё не установлен: `python -m pip install "telegram-bot-control[aiogram]"`.
-Базовый пакет зависит только от psutil; веб-интерфейс и локальные шрифты с кириллицей
-включены. Node.js/Electron для веб-режима не нужны. Приложение Windows и Linux AppImage:
-[GitHub Releases](https://github.com/olegoleg1111121/telegram-bot-control/releases).
+На Linux используйте **python3** вместо **python** в обеих командах.
+Откройте **http://127.0.0.1:8765**, введите ключ из терминала и оставьте терминал открытым.
+`Ctrl+C` остановит панель. [Termux и доступ из сети](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/web-panel.ru.md).
 
-### Подключение к существующему боту
+### Как добавить бота
 
-После создания Bot и Dispatcher, до существующего polling/webhook startup:
+В его главном файле после создания существующих `bot` и `dp`, перед polling:
 
 ```python
 from telegram_bot_control import start
 
-monitor = start(bot=bot, dispatcher=dp, data_dir="/srv/bot-control/data",
-                capture_logs=True,
-                actions={"catalog:open": "catalog.open"})
+monitor = start(bot=bot, dispatcher=dp, capture_logs=True)
 dp.update.outer_middleware(monitor.middleware())
-
-# В нужной точке кода после реальной операции:
-monitor.track_action("order.completed")
 ```
 
-На Windows пример папки: `data_dir=r"C:\BotControl\data"`. У ботов и панели должна
-быть одна абсолютная папка данных. Сохраните свои роутеры, `.env`, логгер и способ
-запуска. SDK записывает локальные SQLite WAL-файлы без HTTP-сервера внутри бота.
+Запустите бота привычной командой — карточка появится автоматически.
+Оставьте свои роутеры, `.env` и логгер. По умолчанию бот и панель используют общую
+папку текущего пользователя. Если задаёте `data_dir`, он должен совпадать в обоих местах.
 
-**Работаете с нейросетью?** [Готовый промпт для подключения к вашему проекту](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/ai-integration.ru.md).
-Есть инструкции для обычного Python и venv; копирование доступно и в панели.
+**Работаете с ИИ?** [Скопируйте готовый промпт](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/ai-integration.ru.md).
+[Подробная инструкция первого запуска](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/getting-started.ru.md).
 
-Веб-панель, в том числе для Linux/Termux:
-
-```sh
-tgbots web --host 127.0.0.1 --port 8765 --data-dir /srv/bot-control/data
-```
-
-В терминале появятся адрес и отдельный ключ доступа. [Веб-режим и доступ с другого устройства](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/web-panel.ru.md).
-
-### Возможности 0.6.0
+### Возможности
 
 - Состояние ботов, пользователи, сообщения, команды, кнопки и история ошибок.
-- Свои события `monitor.track_action()` и декоратор `@monitor.action()` для функций:
-  графики, точное время срабатывания, результат, длительность, фильтры и история.
-- Подключение существующих logging/Loguru, поиск и маскирование секретов.
-- CPU, память RSS и потоки процесса каждого бота.
-- Запуск/остановка/перезапуск, сложные команды и подготовительные шаги, ограниченный автоперезапуск.
-- Настраиваемое хранение истории, русский/английский интерфейс, обучение и мастер подключения.
+- Свои события `monitor.track_action()` и `@monitor.action()` для функций:
+  графики, время срабатывания, длительность и результат.
+- Существующие logging/Loguru, поиск по логам, подробности ошибок запуска.
+- CPU, RSS и потоки процесса каждого бота.
+- Запуск/остановка/перезапуск, сложные команды и ограниченный автоперезапуск.
+- Русский/английский интерфейс, обучение, трей и настройки хранения.
 
-[Документация событий](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/actions.ru.md)
-· [Подробный первый запуск](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/getting-started.ru.md)
-· [Репозиторий](https://github.com/olegoleg1111121/telegram-bot-control).
+Базовый пакет зависит только от psutil. Для существующего aiogram-проекта достаточно
+базового пакета; если aiogram ещё не установлен, используйте
+`python -m pip install "telegram-bot-control[aiogram]"`.
+Веб-интерфейс и шрифты с кириллицей уже включены в пакет.
 
-Ранняя версия для одного доверенного владельца. Если несколько ботов работают
-в одном Python-процессе, ресурсы у них общие и остановка затрагивает весь процесс.
-Автозагрузка как системная служба и импорт старых файлов логов пока не реализованы.
+[Все готовые сборки](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.6.1)
+· [События и аналитика](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/actions.ru.md)
+· [Разработка из исходников](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/development.ru.md).
 
 ---
 
 ## English
 
-Monitoring and process control for existing aiogram bots. One owner, one Windows
-or Linux server, many bots. Includes an embedded Python SDK, an optional browser
-dashboard and a separately distributed desktop application.
+Monitor and control existing aiogram bots on Windows/Linux. **Python 3.11+** is enough
+for the ready-made application; Node.js, pnpm and a source build are not required.
+Use the same Python that already runs your bot.
 
-## Install
+### Windows desktop
 
-For an aiogram bot:
-
-```sh
-python -m pip install "telegram-bot-control[aiogram]"
+```powershell
+python -m pip install --upgrade telegram-bot-control
 ```
 
-For the lightweight web dashboard or stdio/SSH reader:
+[Download the Windows installer](https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.6.1/Telegram-Bot-Control-0.6.1-win-x64.exe),
+run it and open its desktop/Start menu shortcut. Choose Local, enter `python` and click Connect.
+If your bot uses `py main.py`, install through `py -m pip` instead.
+
+### Browser setup
 
 ```sh
-python -m pip install telegram-bot-control
+python -m pip install --upgrade telegram-bot-control
+python -m telegram_bot_control web --port 8765
 ```
 
-Requires Python 3.11+. The base package depends only on psutil. The wheel includes
-the web UI and local Latin/Cyrillic fonts; Node.js and Electron are not required
-for browser mode. Windows setup and Linux AppImage are distributed through
-[GitHub Releases](https://github.com/olegoleg1111121/telegram-bot-control/releases).
+Use `python3` on Linux. Open **http://127.0.0.1:8765**, enter the terminal access key
+and keep that terminal open. Ctrl+C stops the dashboard.
 
-**Working with AI?** [Copy the integration prompt](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/ai-integration.en.md). Regular Python and existing venvs are supported.
-
-## Connect your bot
-
-After creating your existing Bot and Dispatcher, add this inside your startup
-function, before polling:
+### Connect an existing bot
 
 ```python
 from telegram_bot_control import start
 
-monitor = start(
-    bot=bot,
-    dispatcher=dp,
-    data_dir="/srv/bot-control/data",  # choose your own absolute directory
-)
+monitor = start(bot=bot, dispatcher=dp, capture_logs=True)
 dp.update.outer_middleware(monitor.middleware())
-
-await dp.start_polling(bot)
 ```
 
-Use the same data directory for all connected bots and the dashboard. On Windows,
-an example is `data_dir=r"C:\BotControl\data"`. Keep your existing handlers,
-routers, environment loader and polling call. The SDK writes bounded batches to
-per-bot SQLite WAL files without opening a listening port in the bot.
+Add this after your existing Bot/Dispatcher and before polling. Preserve existing
+routers, logging, .env and launch commands. Start the bot normally to register it.
+The bot and dashboard use the owner's shared directory by default; any explicit
+`data_dir` must match. [Copyable AI integration task](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/ai-integration.en.md).
 
-Start the optional browser dashboard:
+Includes status, action timelines, exact timestamps/outcomes/duration, existing
+logging/Loguru adapters, CPU/RSS history, launch profiles and process controls,
+bounded restarts, Russian/English UI, onboarding and configurable retention.
+The base dependency is psutil. Use `[aiogram]` only if aiogram is not already installed.
+The browser UI and local fonts are bundled in the Python package.
 
-```sh
-tgbots web --port 8765 --data-dir /srv/bot-control/data
-```
+[Downloads](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.6.1)
+· [Source development setup](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/development.en.md).
 
-The terminal displays a loopback URL and a separate dashboard access key.
-For network access and Termux, see the
-[web dashboard guide](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/web-panel.ru.md).
-The default mode is local HTTP; use an HTTPS proxy or SSH tunnel for untrusted networks.
-
-## Features
-
-- Custom events and sync/async function decorators, timelines, outcomes, duration and occurrence history.
-- Bot status, message/command/button counters and retained error history.
-- Existing Python logging and optional Loguru adapters, search and secret redaction.
-- CPU, RSS and thread history for each bot's Python process.
-- Explicit launch profiles: arguments, working directory, preparation steps and optional env-file.
-- Start, graceful stop, restart and bounded on-failure automatic restarts.
-- Detailed startup stderr/stdout, including failures before SDK initialization.
-- Russian/English interfaces and configurable retention.
-
-Optional integration with an already configured logger:
-
-```python
-monitor.capture_logs()  # standard logging; existing handlers are preserved
-# For Loguru, use logger.add(monitor.loguru_sink, level="INFO") instead.
-```
-
-This is an early preview for a single trusted owner. Process control verifies PID,
-creation time and owner. Multiple bots sharing one Python process share resource
-measurements and cannot be stopped independently. It does not install an OS boot
-service or import historical log files.
+Early preview for one trusted owner. History starts at SDK integration. Bots sharing
+one Python process share resources and cannot stop independently. Desktop Python is installed
+separately. The Windows installer is currently unsigned.
 
 Created by [Дмитрий Варг](https://github.com/olegoleg1111121). MIT license.
-
-[Source and documentation](https://github.com/olegoleg1111121/telegram-bot-control)
-· [Russian walkthrough](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/getting-started.ru.md)
-· [Issues](https://github.com/olegoleg1111121/telegram-bot-control/issues)

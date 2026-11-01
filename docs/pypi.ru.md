@@ -1,5 +1,8 @@
 # Публикация библиотеки в PyPI
 
+**Для установки программы откройте [первый запуск](getting-started.ru.md).**
+Этот документ предназначен для владельца, который выпускает новые версии.
+
 Версия 0.6.0 [опубликована в PyPI](https://pypi.org/project/telegram-bot-control/)
 2026-11-01 через [Trusted Publishing](https://github.com/olegoleg1111121/telegram-bot-control/actions/runs/41307728202).
 Одноразовая настройка для текущего репозитория уже выполнена.
@@ -37,31 +40,6 @@ wheel/sdist через Trusted Publishing. Публикация запускае
 Pending publisher не резервирует имя: проект появляется при первом успешном upload.
 [Официальная инструкция](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/).
 Разрешение OIDC ограничено publish job; checkout и тестам оно не выдаётся.
-
-## Команды установки
-
-Установка из PyPI:
-
-```sh
-python -m pip install "telegram-bot-control[aiogram]"
-```
-
-Для панели/bridge, когда aiogram уже находится в окружениях ботов:
-
-```sh
-python -m pip install telegram-bot-control
-tgbots web --port 8765 --data-dir /srv/bot-control/data
-```
-
-Альтернативно можно установить wheel GitHub Release:
-
-```sh
-python -m pip install "telegram-bot-control[aiogram] @ https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.6.0/telegram_bot_control-0.6.0-py3-none-any.whl"
-```
-
-Wheel включает веб-интерфейс, поэтому сборка Node.js на сервере пользователя не
-нужна. Git не содержит сгенерированный веб-интерфейс: для него перед `python -m build`
-требуется `pnpm --dir desktop run build`.
 
 ## Следующая версия
 

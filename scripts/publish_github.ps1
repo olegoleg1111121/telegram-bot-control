@@ -11,7 +11,7 @@ if (-not $Publish) {
     Write-Output 'When ready: install GitHub CLI, sign in, then run:'
     Write-Output '.\scripts\publish_github.ps1 -Publish'
     Write-Output 'The script uses your actual GitHub identity and creates a public repository.'
-    Write-Output 'It pushes main and v0.6.0; Actions then prepare a draft release for review.'
+    Write-Output 'It pushes main and v0.6.1; Actions then prepare a draft release for review.'
     exit 0
 }
 
@@ -70,7 +70,7 @@ if ($remote -and $remote -notmatch ('github\.com[:/]' + [regex]::Escape($reposit
 if ($LASTEXITCODE -ne 0) { throw 'Staged content did not pass release checks.' }
 & git diff --cached --quiet
 if ($LASTEXITCODE -ne 0) {
-    & git commit -m 'Prepare Telegram Bot Control v0.6.0'
+    & git commit -m 'Prepare Telegram Bot Control v0.6.1'
     if ($LASTEXITCODE -ne 0) { throw 'Local commit failed.' }
 }
 & git rev-parse --verify HEAD 2>$null | Out-Null
@@ -93,12 +93,12 @@ if (-not $remote) {
 if ($LASTEXITCODE -ne 0) { throw 'Git authentication setup failed.' }
 & git push --set-upstream origin main
 if ($LASTEXITCODE -ne 0) { throw 'Push failed; remote history was not overwritten.' }
-& git tag --list v0.6.0 | Tee-Object -Variable existingTag | Out-Null
+& git tag --list v0.6.1 | Tee-Object -Variable existingTag | Out-Null
 if (-not $existingTag) {
-    & git tag -a v0.6.0 -m 'Telegram Bot Control v0.6.0'
+    & git tag -a v0.6.1 -m 'Telegram Bot Control v0.6.1'
     if ($LASTEXITCODE -ne 0) { throw 'Could not create the release tag.' }
 }
-& git push origin v0.6.0
+& git push origin v0.6.1
 if ($LASTEXITCODE -ne 0) { throw 'Tag push failed; existing remote tags were not overwritten.' }
 Write-Output "Published source: https://github.com/$repository"
 Write-Output 'Actions will prepare a draft release after builds finish. Review it before publishing the release.'

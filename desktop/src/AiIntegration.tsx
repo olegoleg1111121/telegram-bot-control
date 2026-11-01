@@ -93,11 +93,9 @@ export default function AiIntegration({
                 setCopied(false);
               }}
             >
-              <option value="system">
-                {ru ? 'Обычный Python, без venv' : 'Regular Python, no venv'}
-              </option>
+              <option value="system">{ru ? 'Обычный Python' : 'Regular Python'}</option>
               <option value="venv">
-                {ru ? 'Существующий venv / virtualenv' : 'Existing venv / virtualenv'}
+                {ru ? 'Уже настроенное окружение бота' : 'Existing bot environment'}
               </option>
             </select>
           </label>

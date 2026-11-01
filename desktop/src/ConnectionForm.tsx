@@ -52,6 +52,8 @@ export default function ConnectionForm({
             onChange={(e) => change({ ...profile, python: e.target.value })}
             spellCheck={false}
           />
+          <small>{t('pythonHelp')}</small>
+          <code>python -c "import sys; print(sys.executable)"</code>
         </label>
         <label className="wide">
           {t('dataDir')}

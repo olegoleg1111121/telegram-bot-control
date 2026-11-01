@@ -1,6 +1,6 @@
 {
   "name": "telegram-bot-control-desktop",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "description": "Desktop monitoring and process control for aiogram bots",
   "author": "Дмитрий Варг",

@@ -1,20 +1,20 @@
 # Contributing
 
-Use Python 3.11+ and Node.js 24. The desktop pins pnpm in package.json.
+Start with the [developer setup](docs/development.en.md) / [инструкция разработчика](docs/development.ru.md). It links Node.js downloads and explains pnpm installation.
+Use your chosen Python 3.11+ interpreter.
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e '.[dev,release]'
+python -m pip install -e '.[dev,release]'
 pnpm install --dir desktop --frozen-lockfile
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\ruff.exe check src scripts tests examples
-.\.venv\Scripts\ruff.exe format --check src scripts tests examples
+python -m pytest -q
+python -m ruff check src scripts tests examples
+python -m ruff format --check src scripts tests examples
 pnpm --dir desktop run test
 pnpm --dir desktop run format:check
 pnpm --dir desktop run build
 ```
 
-On Linux, use .venv/bin/python and .venv/bin/ruff.
+On Linux, use python3. An existing isolated development environment is optional.
 No real bot token is needed for tests. Integration fixtures exercise actual aiogram
 dispatchers, routers and FSM through an offline session.
 
@@ -26,7 +26,7 @@ complex bot through HTTP and stops it during cleanup. Do not point it at real da
 For process-control UI changes, prepare the fixture and run the real Electron flow:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/control_fixture.py --data-dir .test-data/ui-controls --project-dir '.test-data/Complex UI bot'
+python scripts/control_fixture.py --data-dir .test-data/ui-controls --project-dir '.test-data/Complex UI bot'
 $env:BOTCONTROL_HOME = (Resolve-Path .test-data/ui-controls).Path
 pnpm --dir desktop run smoke:control
 ```

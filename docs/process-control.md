@@ -27,10 +27,10 @@
 
 ```json
 {
-  "command": ["/srv/bots/shop/.venv/bin/python", "-u", "-m", "shop_bot", "--config", "config/prod config.json", "--workers", "4"],
+  "command": ["/usr/bin/python3", "-u", "-m", "shop_bot", "--config", "config/prod config.json", "--workers", "4"],
   "cwd": "/srv/bots/shop",
   "pre_start": [
-    ["/srv/bots/shop/.venv/bin/python", "prepare.py", "--config", "config/prod config.json"]
+    ["/usr/bin/python3", "prepare.py", "--config", "config/prod config.json"]
   ],
   "env_file": "/srv/bots/shop/.env",
   "environment": {"BOT_MODE": "production"},

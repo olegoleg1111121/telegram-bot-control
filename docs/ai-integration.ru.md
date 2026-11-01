@@ -6,32 +6,16 @@
 Он должен сначала изучить проект и сохранить существующий способ запуска.
 В панели тот же промпт находится в разделе **Подключить с ИИ** и в мастере подключения.
 
-## Обычный Python или venv
+## Перед подключением
 
-Venv **не обязателен**. Проверьте интерпретатор, которым бот уже работает:
-
-```sh
-python -c "import sys; print(sys.executable)"
-python -m pip --version
-python -m pip install --upgrade "telegram-bot-control>=0.6.0"
-```
-
-Если запускаете через `py -3.12`, используйте `py -3.12 -m pip`.
-Для существующего venv укажите его Python без активации:
-
-```powershell
-& 'C:\Bots\my-bot\.venv\Scripts\python.exe' -m pip install --upgrade telegram-bot-control
-```
+Установка SDK выполняется одной командой в PowerShell или терминале вашего бота:
 
 ```sh
-/srv/my-bot/.venv/bin/python -m pip install --upgrade telegram-bot-control
+python -m pip install --upgrade telegram-bot-control
 ```
 
-Для уже работающего aiogram-бота достаточно базового пакета. Extra `[aiogram]`
-нужен, если самого aiogram ещё нет. Если системный Python Linux запрещает установку
-(PEP 668), не используйте `--break-system-packages`: выберите разрешённый
-пользовательский Python или согласуйте отдельное окружение. Такой запрет исходит от
-дистрибутива, приложение само не требует venv. Не запускайте pip через sudo.
+Если бот запускается через `py` или `python3`, замените `python` тем же способом.
+[Открыть панель и добавить первого бота](getting-started.ru.md).
 
 ## Готовый промпт
 
