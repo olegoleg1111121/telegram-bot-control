@@ -15,7 +15,14 @@ test('guide completion and language persist across new desktop sessions', () => 
   const first = preferences(directory);
   assert.equal(first.read().guideSeenVersion, 0);
   first.update({ guideSeenVersion: 1, language: 'en' });
-  assert.deepEqual(preferences(directory).read(), { guideSeenVersion: 1, language: 'en' });
+  assert.deepEqual(preferences(directory).read(), {
+    guideSeenVersion: 1,
+    language: 'en',
+    autoUpdate: true,
+    includePrereleases: true,
+  });
+  first.update({ autoUpdate: false });
+  assert.equal(preferences(directory).read().autoUpdate, false);
   assert.throws(() => first.update({ path: '../outside' }), /Invalid/);
   assert.equal(fs.existsSync(path.join(directory, 'desktop.json.tmp')), false);
 });

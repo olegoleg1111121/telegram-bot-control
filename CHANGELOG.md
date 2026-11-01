@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0 — 2026-11-01
+
+- Add desktop updates from the official public GitHub Releases repository.
+- Check on startup and every six hours, download in the background, and install on explicit restart.
+- Add RU/EN update settings, prerelease preference, progress, ready banner and modal manual errors.
+- Preserve bot processes, connection profiles and history during desktop updates.
+- Publish and verify Windows/Linux update metadata and Windows differential blockmaps.
+- Explain one-time migration from older desktop versions and manual ZIP updates.
+
 ## 0.7.0 — 2026-11-01
 
 - Launch the bundled browser dashboard with bare `tgbots` or `python -m telegram_bot_control`.

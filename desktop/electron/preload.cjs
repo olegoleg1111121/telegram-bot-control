@@ -1,6 +1,17 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('botControl', {
+  updateStatus: () => ipcRenderer.invoke('updates:status'),
+  checkForUpdates: () => ipcRenderer.invoke('updates:check'),
+  downloadUpdate: () => ipcRenderer.invoke('updates:download'),
+  installUpdate: () => ipcRenderer.invoke('updates:install'),
+  saveUpdatePreferences: (next) => ipcRenderer.invoke('updates:preferences', next),
+  openReleases: () => ipcRenderer.invoke('updates:releases'),
+  onUpdate: (callback) => {
+    const listener = (_event, state) => callback(state);
+    ipcRenderer.on('updates:changed', listener);
+    return () => ipcRenderer.removeListener('updates:changed', listener);
+  },
   actions: (params) => ipcRenderer.invoke('control:actions', params),
   logs: (params) => ipcRenderer.invoke('control:logs', params),
   inspectProject: (directory, entrypoint) =>

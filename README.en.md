@@ -19,9 +19,15 @@ the dashboard while bots continue running. If `tgbots` is not on PATH, use
 **`python -m telegram_bot_control`**. On Linux use `python3`; Windows also supports `py`.
 Node.js, pnpm and a separate desktop installer are unnecessary for this mode.
 
-The [optional desktop application](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0)
+The [optional desktop application](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.8.0)
 automatically discovers installed Python runtimes and checks the SDK. Connection errors
 open a dialog with a specific fix. Use `tgbots desktop` to open the installed Electron app.
+
+Installed Windows apps and Linux AppImages check GitHub on startup and every six hours,
+download updates in the background, and offer **Install and restart**. Bots keep running.
+Settings → Application updates controls automatic downloads and prereleases.
+Versions 0.7.0 and older need one manual .exe installation; ZIP builds update manually.
+See [desktop updates](docs/updates.md).
 
 ## Connect an existing bot
 

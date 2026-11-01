@@ -23,7 +23,7 @@ tgbots
 На Linux используйте `python3`; на Windows также можно использовать `py`.
 Нужен Python 3.11+. Node.js, pnpm и отдельный установщик для этого способа не нужны.
 
-[Отдельное desktop-окно Windows — дополнительный вариант](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0).
+[Отдельное desktop-окно Windows — дополнительный вариант](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.8.0).
 В нём есть автоматический поиск Python и окно ошибки с конкретным способом исправления.
 [Termux и доступ из сети](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/web-panel.ru.md).
 
@@ -45,6 +45,11 @@ dp.update.outer_middleware(monitor.middleware())
 **Работаете с ИИ?** [Скопируйте готовый промпт](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/ai-integration.ru.md).
 [Подробная инструкция первого запуска](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/getting-started.ru.md).
 
+Desktop-версия 0.8.0+ обновляется через GitHub Releases: проверка и загрузка в фоне,
+затем «Установить и перезапустить». Для 0.7.0 и старше один раз установите новый .exe.
+Боты продолжают работать. ZIP-сборки обновляются вручную; Linux — через AppImage.
+Python-пакет обновляйте командой `python -m pip install --upgrade telegram-bot-control`.
+
 ### Возможности
 
 - Состояние ботов, пользователи, сообщения, команды, кнопки и история ошибок.
@@ -60,7 +65,7 @@ dp.update.outer_middleware(monitor.middleware())
 `python -m pip install "telegram-bot-control[aiogram]"`.
 Веб-интерфейс и шрифты с кириллицей уже включены в пакет.
 
-[Все готовые сборки](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0)
+[Все готовые сборки](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.8.0)
 · [События и аналитика](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/actions.ru.md)
 · [Разработка из исходников](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/development.ru.md).
 
@@ -84,8 +89,11 @@ Python and the owner's default directory without manual configuration. Keep the 
 open; Ctrl+C stops the dashboard. If `tgbots` is not on PATH, use
 **`python -m telegram_bot_control`**. Use `python3` on Linux or `py` on Windows as needed.
 
-The [optional desktop application](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0)
+The [optional desktop application](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.8.0)
 includes automatic Python discovery, SDK checks and actionable connection error dialogs.
+Installed Windows apps and Linux AppImages also receive GitHub updates, with background
+downloads and an Install and restart button. Versions 0.7.0 and older need one manual
+upgrade; extracted ZIP builds update manually. The Python package is updated with pip.
 
 ### Connect an existing bot
 
@@ -107,7 +115,7 @@ bounded restarts, Russian/English UI, onboarding and configurable retention.
 The base dependency is psutil. Use `[aiogram]` only if aiogram is not already installed.
 The browser UI and local fonts are bundled in the Python package.
 
-[Downloads](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.7.0)
+[Downloads](https://github.com/olegoleg1111121/telegram-bot-control/releases/tag/v0.8.0)
 · [Source development setup](https://github.com/olegoleg1111121/telegram-bot-control/blob/main/docs/development.en.md).
 
 Early preview for one trusted owner. History starts at SDK integration. Bots sharing

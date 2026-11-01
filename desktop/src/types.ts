@@ -44,6 +44,26 @@ export type DesktopInfo = {
   autoGuide: boolean;
   version: string;
 };
+export type UpdateState = {
+  version: string;
+  mode: 'automatic' | 'development' | 'portable' | 'unsupported';
+  phase:
+    | 'idle'
+    | 'unavailable'
+    | 'checking'
+    | 'current'
+    | 'available'
+    | 'downloading'
+    | 'downloaded'
+    | 'installing'
+    | 'error';
+  nextVersion: string;
+  progress: number;
+  checkedAt: number | null;
+  error: string;
+  autoUpdate: boolean;
+  includePrereleases: boolean;
+};
 export type WebState = {
   running: boolean;
   host?: string;
@@ -229,6 +249,16 @@ export type ActionAnalytics = {
 declare global {
   interface Window {
     botControl: {
+      updateStatus?(): Promise<UpdateState>;
+      checkForUpdates?(): Promise<UpdateState>;
+      downloadUpdate?(): Promise<UpdateState>;
+      installUpdate?(): Promise<UpdateState>;
+      saveUpdatePreferences?(next: {
+        autoUpdate?: boolean;
+        includePrereleases?: boolean;
+      }): Promise<UpdateState>;
+      openReleases?(): Promise<void>;
+      onUpdate?(callback: (state: UpdateState) => void): () => void;
       actions(params: ActionParams): Promise<ActionAnalytics>;
       logs(params: {
         bot_id: string;

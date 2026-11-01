@@ -36,6 +36,7 @@ import ProjectWizard from './ProjectWizard';
 import ActionAnalytics from './ActionAnalytics';
 import AiIntegration from './AiIntegration';
 import ConnectionProblem from './ConnectionProblem';
+import DesktopUpdates, { useDesktopUpdates, UpdateBanner, UpdateProblem } from './DesktopUpdates';
 import type { ConnectionProblem as Problem } from './types';
 import { isoDay, periodWindow } from './time';
 
@@ -92,6 +93,7 @@ export default function App() {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [resourceMinutes, setResourceMinutes] = useState(60);
   const isWeb = desktopInfo?.runtime === 'web';
+  const updater = useDesktopUpdates(desktopInfo?.runtime === 'desktop');
   const transportLabel = isWeb ? t('webTransport') : t('transport');
   const locale = language === 'ru' ? 'ru-RU' : 'en-US';
   const format = (n: number) => new Intl.NumberFormat(locale).format(n);
@@ -476,6 +478,14 @@ export default function App() {
           </div>
         </header>
         <main className="main-content">
+          {updater.state && (
+            <UpdateBanner
+              state={updater.state}
+              language={language}
+              act={updater.act}
+              open={() => changeTab('settings')}
+            />
+          )}
           {failure && (
             <div className="connection-error" role="alert">
               <TriangleAlert size={20} />
@@ -545,6 +555,9 @@ export default function App() {
                   </label>
                 </div>
               </section>
+              {updater.state && (
+                <DesktopUpdates state={updater.state} language={language} act={updater.act} />
+              )}
               <section className="panel settings-panel">
                 <PanelTitle
                   icon={<Database size={17} />}
@@ -1045,6 +1058,9 @@ export default function App() {
           close={closeGuide}
           initialStep={guideStart}
         />
+      )}
+      {updater.problem && !guideOpen && (
+        <UpdateProblem details={updater.problem} language={language} close={updater.close} />
       )}
       {wizardOpen && (
         <ProjectWizard

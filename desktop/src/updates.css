@@ -1,0 +1,84 @@
+.update-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 22px 0;
+}
+.update-title h2 {
+  margin: 0;
+  font-size: 13px;
+}
+.update-title code {
+  margin-left: auto;
+  color: #8ed5bf;
+  font-size: 12px;
+}
+.update-description {
+  color: #8d9bb0;
+  font-size: 12px;
+  line-height: 1.8;
+  padding: 0 22px;
+}
+.update-options {
+  padding: 6px 22px 16px;
+  display: grid;
+  gap: 14px;
+}
+.update-options label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #bdcbd9;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.update-options input {
+  width: 16px;
+  height: 16px;
+  accent-color: #89d6bd;
+}
+.update-options small {
+  color: #8394ab;
+  font-size: 11px;
+}
+.update-status {
+  padding: 0 22px 18px;
+  font-size: 12px;
+  color: #b7dfd1;
+}
+.update-error {
+  margin: 0 22px 18px;
+  font-size: 12px;
+  color: #dca99e;
+}
+.update-error pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.desktop-updates progress {
+  display: block;
+  width: calc(100% - 44px);
+  margin: 0 22px 18px;
+  accent-color: #89d6bd;
+}
+.update-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.update-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  background: #1a3029;
+  border: 1px solid #345c4e;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: #bce8d9;
+  font-size: 12px;
+}
+.update-banner > span {
+  margin-right: auto;
+}

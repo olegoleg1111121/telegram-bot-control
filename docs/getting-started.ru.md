@@ -27,7 +27,7 @@ Python и папку вручную не требуется: используе�
 
 ## 2. Если нужно отдельное desktop-окно
 
-Это дополнительный вариант. [Установщик Windows](https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.7.0/Telegram-Bot-Control-0.7.0-win-x64.exe)
+Это дополнительный вариант. [Установщик Windows](https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.8.0/Telegram-Bot-Control-0.8.0-win-x64.exe)
 создаёт ярлык. Откройте его: приложение само ищет Python, даже если его нет в PATH.
 Рядом с каждой найденной версией видно, установлена ли в ней библиотека.
 Можно повторить поиск кнопкой **Найти Python на компьютере** или выбрать файл вручную.

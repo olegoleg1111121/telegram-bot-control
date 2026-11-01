@@ -11,6 +11,7 @@ Key dependencies retain their own licenses:
 | aiogram | MIT | Telegram event handling |
 | psutil | BSD-3-Clause | Process identity and lifecycle |
 | Electron | MIT, with bundled Chromium/Node notices | Desktop runtime |
+| electron-updater | MIT, with dependency notices in the packaged modules | GitHub release updates |
 | React | MIT | Interface |
 | Lucide | ISC | Interface icons |
 | SQLite | Public domain | Embedded storage |

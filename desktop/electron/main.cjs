@@ -1,9 +1,19 @@
-const { app, BrowserWindow, ipcMain, Menu, clipboard, shell, dialog } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  clipboard,
+  shell,
+  dialog,
+  Notification,
+} = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const { BridgeClient, commandFor } = require('./bridge-client.cjs');
 const { preferences, connectionProfile, defaultPython } = require('./desktop-state.cjs');
 const { createLifecycle } = require('./window-lifecycle.cjs');
+const { createUpdates, updateMode, RELEASES } = require('./updates.cjs');
 const {
   discoverPythons,
   probePython,
@@ -45,6 +55,7 @@ let profile;
 let connecting;
 let desktopState;
 let lifecycle;
+let updates;
 let connectionAttempt = 0;
 let pythonDiscovery;
 let discoveryTime = 0;
@@ -190,6 +201,42 @@ if (primary)
           throw new Error('Untrusted sender');
         return handler(...args);
       });
+    updates = createUpdates({
+      updater: experienceSmoke
+        ? require('./updates-smoke.cjs').fixture(app)
+        : require('electron-updater').autoUpdater,
+      version: app.getVersion(),
+      mode: experienceSmoke
+        ? 'automatic'
+        : updateMode({
+            packaged: app.isPackaged && !smoke,
+            platform: process.platform,
+            executable: app.getPath('exe'),
+            appImage: process.env.APPIMAGE,
+          }),
+      preferences: desktopState,
+      changed: (state) => {
+        if (!window.isDestroyed()) window.webContents.send('updates:changed', state);
+      },
+      notify: (version) => {
+        if (!Notification.isSupported() || window.isFocused()) return;
+        const ru = desktopState.read().language !== 'en';
+        const notification = new Notification({
+          title: 'Telegram Bot Control',
+          body: ru
+            ? `Версия ${version} готова. Откройте панель, чтобы установить обновление.`
+            : `Version ${version} is ready. Open the dashboard to install the update.`,
+        });
+        notification.on('click', () => lifecycle?.restore());
+        notification.show();
+      },
+    });
+    handle('updates:status', () => updates.read());
+    handle('updates:check', () => updates.check());
+    handle('updates:download', () => updates.download());
+    handle('updates:install', () => updates.install());
+    handle('updates:preferences', (next) => updates.configure(next));
+    handle('updates:releases', () => shell.openExternal(RELEASES));
     handle('control:snapshot', (params) => request('snapshot', params));
     handle('control:connection', () => profile);
     handle('control:discover-python', (force) => findPythons(force === true));
@@ -291,9 +338,11 @@ if (primary)
       }
     } else {
       window.show();
+      updates.start();
     }
   });
 app.on('window-all-closed', () => app.quit());
 app.on('before-quit', () => {
+  updates?.dispose();
   if (client) client.close();
 });

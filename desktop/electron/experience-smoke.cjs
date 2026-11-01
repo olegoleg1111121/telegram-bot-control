@@ -158,6 +158,7 @@ async function run(window, root, { app, lifecycle }) {
     await evaluate('document.querySelector("[data-testid=ai-prompt]").value'),
   );
   console.log('AI_DESKTOP_CLIPBOARD_OK: complete integration prompt copied through desktop IPC.');
+  await require('./updates-smoke.cjs').run(window, root);
 
   assert.equal(saved.guideSeenVersion, 1);
   assert.equal(saved.language, 'en');
@@ -211,12 +212,15 @@ async function run(window, root, { app, lifecycle }) {
   const ended = new Promise((resolve) =>
     app.once('will-quit', () => {
       assert.equal(window.isDestroyed(), true);
-      console.log('TRAY_QUIT_OK: explicit Exit closes the application.');
+      console.log(
+        'UPDATE_RESTART_QUIT_OK: update installation exits instead of hiding in the tray.',
+      );
       resolve();
     }),
   );
-  if (lifecycle.menu) lifecycle.menu.getMenuItemById('quit').click();
-  else app.quit();
+  await click('nav-settings');
+  await waitFor('document.querySelector("[data-testid=update-install]") !== null');
+  await click('update-install');
   await ended;
 }
 

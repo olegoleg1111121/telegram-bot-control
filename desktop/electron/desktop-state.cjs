@@ -13,6 +13,8 @@ function preferences(directory) {
         ? Math.min(next.guideSeenVersion, 1)
         : 0,
     ...(next?.language === 'ru' || next?.language === 'en' ? { language: next.language } : {}),
+    autoUpdate: next?.autoUpdate !== false,
+    includePrereleases: next?.includePrereleases !== false,
   });
   value = clean(value);
   return {
@@ -21,7 +23,10 @@ function preferences(directory) {
       if (
         !next ||
         typeof next !== 'object' ||
-        Object.keys(next).some((key) => !['guideSeenVersion', 'language'].includes(key))
+        Object.keys(next).some(
+          (key) =>
+            !['guideSeenVersion', 'language', 'autoUpdate', 'includePrereleases'].includes(key),
+        )
       )
         throw new Error('Invalid desktop preferences');
       const updated = clean({ ...value, ...next });
