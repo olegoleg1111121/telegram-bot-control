@@ -554,7 +554,10 @@ class ProcessManager:
                 connection.close()
 
         request_stop(sessions)
-        deadline = time.monotonic() + (0.5 if force else 6)
+        # Imports can take several seconds before a managed bot registers its SDK.
+        # Give that startup a bounded grace period to receive a cooperative stop.
+        waiting_for_startup = not sessions and run and run["status"] in ACTIVE
+        deadline = time.monotonic() + (0.5 if force else 15 if waiting_for_startup else 6)
         while time.monotonic() < deadline:
             # Stop may arrive while Python is still importing, before SDK registration.
             if run:

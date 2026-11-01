@@ -193,6 +193,7 @@ if (primary)
     );
     handle('control:launch-profile', (botId) => request('launch_profile', { bot_id: botId }));
     handle('control:logs', (params) => request('logs', params));
+    handle('control:actions', (params) => request('action_analytics', params));
     handle('control:inspect-project', (directory, entrypoint) =>
       request('inspect_project', { directory, entrypoint }),
     );

@@ -1,233 +1,224 @@
-<div align="center">
-  <img src="desktop/assets/icon.svg" width="88" alt="Telegram Bot Control icon">
-  <h1>Telegram Bot Control</h1>
-  <p>Desktop monitoring and process control for aiogram bots.</p>
-  <p>Python · aiogram · Electron · React · TypeScript · SQLite</p>
-  <p><a href="README.ru.md">Русская инструкция</a> · <a href="docs/process-control.md">Launch profiles</a> · <a href="docs/case-study.md">Engineering notes</a> · <a href="docs/releasing.md">Release guide</a></p>
-</div>
+# Telegram Bot Control
 
-**v0.5.1 · Preview · MIT**
+[Русский](README.md) · [English](README.en.md)
 
-Startup failures now show retained command stdout/stderr, including errors before
-SDK initialization, with secret redaction and bounded output history.
+**0.6.0:** события из кода через `monitor.track_action()` и декоратор `@monitor.action()`,
+графики и история срабатываний с точным временем, результатом и длительностью.
+[Аналитика событий](docs/actions.ru.md).
 
-New in 0.5.0: existing logging/Loguru streams, per-process CPU/RSS history, bounded
-on-failure restarts and a guided existing-project connector. Available in both
-desktop and web modes. [Diagnostics](docs/diagnostics.ru.md) · [Project wizard](docs/project-wizard.ru.md).
+**Подключаете бота с помощью ИИ?** [Скопируйте готовый промпт](docs/ai-integration.ru.md).
+Он учитывает существующий код, `.env`, логгер, команды запуска и **обычный Python без venv**.
+Тот же промпт можно скопировать из панели в разделе «Подключить с ИИ».
 
-One owner, one server, many bots. Connect a small Python SDK to existing aiogram
-applications, inspect activity and exceptions, and control their processes from a
-dark desktop interface. Local transport uses SQLite WAL and standard input/output.
-Remote Linux access uses the same bridge over SSH.
-
-An optional authenticated web dashboard serves the same interface on a chosen port,
-including headless hosts and Termux. It is disabled by default. Run
-`tgbots web --port 8765 --data-dir /srv/bot-control/data`, or enable it under desktop
-Settings → Web dashboard. The terminal/settings show a separate browser access key.
-[Web/Termux guide](docs/web-panel.ru.md).
-
-[Measured distribution size and packaging changes](docs/size-report.md).
-
-<img src="docs/assets/overview.png" alt="Server overview with activity charts and three demonstration bots" width="1200">
-
-_All screenshots use synthetic demo data and anonymous server labels._
-
-## Install a release
-
-Download desktop installers or the portable Windows ZIP from
-[GitHub Releases](https://github.com/olegoleg1111121/telegram-bot-control/releases).
-Install the published [Python package](https://pypi.org/project/telegram-bot-control/)
-without Node.js; the wheel includes the web dashboard:
+Готовые сборки: [GitHub Releases](https://github.com/olegoleg1111121/telegram-bot-control/releases).
+Библиотека опубликована в [PyPI](https://pypi.org/project/telegram-bot-control/):
 
 ```sh
 python -m pip install "telegram-bot-control[aiogram]"
 ```
 
-For the dashboard/bridge alone, install `telegram-bot-control` without the extra.
-PyPI releases use GitHub Actions Trusted Publishing without a stored API token.
-[Publication workflow](docs/pypi.ru.md).
+Для панели без aiogram: `python -m pip install telegram-bot-control`.
+Node.js для установки не нужен. [Установка и публикация](docs/pypi.ru.md).
 
-## What it does
+**0.5.1:** подробный вывод команды запуска и подготовительных шагов: traceback
+виден и при ошибке до подключения SDK. Значения секретных переменных маскируются.
 
-- Registers bots automatically and keeps their history across restarts.
-- Shows heartbeat state separately from user activity.
-- Counts messages, commands, callbacks and distinct users over a selected range.
-- Groups handler exceptions and expands sanitized technical details.
-- Starts, gracefully stops and restarts bots with their configured launch profile.
-- Preserves arguments, working directory, preparation steps and environment-file paths.
-- Checks process identity using PID and creation time before termination.
-- Keeps collecting while the desktop window is closed.
-- Supports Russian and English, time zones and configurable retention.
-- Includes a first-run guide, close-to-tray behavior and Windows installation shortcuts.
-- Optional browser access, responsive phone layout and locally bundled Inter fonts.
+**0.5.0:** логи существующего logging/Loguru, графики CPU и памяти процесса каждого
+бота, настраиваемый автоперезапуск и мастер подключения проекта.
+[Логи, ресурсы и перезапуск](docs/diagnostics.ru.md) · [Мастер подключения](docs/project-wizard.ru.md).
 
-[First-run walkthrough (Russian)](docs/getting-started.ru.md). Reopen the in-app guide
-from the sidebar or system tray. Closing the window hides it; use the tray menu to quit.
+**0.4.0:** необязательная веб-панель с выбором порта, шрифт Inter с кириллицей и
+уменьшенная desktop-сборка. Проверки обязательных переменных по умолчанию пустые:
+если бот сам загружает `.env`, дополнительное требование `BOT_TOKEN` не добавляется.
+[Веб-панель и Termux](docs/web-panel.ru.md).
 
-<details>
-<summary>First-run guide</summary>
+[English overview](README.en.md) · [Подготовка и публикация в GitHub](docs/publishing.ru.md)
 
-<img src="docs/assets/onboarding.png" alt="Russian first-run guide with connection, aiogram integration and system tray instructions" width="1100">
+**0.3.1:** добавлены трей, обучение при первом запуске и ярлыки Windows.
+[Подробная инструкция первого запуска](docs/getting-started.ru.md).
 
-</details>
+Рабочая первая версия мониторинга aiogram-ботов: Python-библиотека внутри каждого
+бота и отдельное тёмное приложение Electron. Один сервер Windows/Linux, один владелец.
+Состояние, общая статистика, ошибки, русский и английский интерфейсы.
 
-## Try it locally
+В версии **0.3.0** добавлены запуск, остановка и перезапуск из карточки бота.
+Поддерживаются аргументы, запуск модулем, подготовительные команды, рабочая папка
+и файл окружения. [Профили сложных запусков и ограничения](docs/process-control.md).
 
-Requirements: **Python 3.11+**, **Node.js 24**, and **pnpm 11.25.0**.
-Run these commands from a source checkout or extracted source archive:
+**В режиме SDK/desktop отдельного локального сервера нет.** Боты записывают телеметрию в собственные
+SQLite-файлы, приложение читает её через дочерний Python-процесс по stdin/stdout.
+Для Linux используется тот же поток через SSH. HTTP, слушающий порт и Docker не нужны.
+Сбор продолжается при закрытом окне. Подробнее: [схема связи](docs/transport.md).
+
+## Установка для разработки
+
+Нужны Python 3.11+, Node.js 24 и pnpm 11.25.0. Из корня проекта в PowerShell:
 
 ```powershell
-python -m venv .venv
+py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e '.[dev]'
-pnpm install --dir desktop --frozen-lockfile
+pnpm install --dir desktop
 pnpm --dir desktop run build
 ```
 
-For Linux, use `.venv/bin/python` and `.venv/bin/tgbots`.
-Install pnpm with `npm install --global pnpm@11.25.0` if needed.
+Для воспроизводимого Python-окружения можно сначала установить
+`requirements-dev.lock`, затем пакет через `pip install -e . --no-deps`.
+`desktop/pnpm-lock.yaml` фиксирует зависимости приложения.
 
-Start an explicit offline analytics demo in one terminal:
+## Попробовать без Telegram-токена
+
+В первом PowerShell запустить настоящие диспетчеры aiogram с офлайн-сессией:
 
 ```powershell
 .\.venv\Scripts\tgbots.exe demo --bots 3 --data-dir .bot-control
 ```
 
-Open the desktop from another terminal in the same folder:
+Во втором открыть приложение с этой же папкой:
 
 ```powershell
 .\.venv\Scripts\tgbots.exe open --data-dir .bot-control
 ```
 
-The demo uses real aiogram dispatchers with a network-free session. It generates
-messages, commands, button events and a controlled exception. No Telegram account
-or bot token is required.
+Это явно обозначенные тестовые боты: события синтетические, но проходят через
+реальные handlers и middleware aiogram. `/start`, callback и намеренная ошибка
+проверяются без Telegram и без создания внешних ботов. Ctrl+C завершает демо.
+Для ограниченного прогона есть `--duration 15 --interval 0.1`.
 
-For the independent Start/Stop/Restart walkthrough, use the complex fixture:
+## Подключить существующего бота
 
-```powershell
-.\.venv\Scripts\python.exe scripts/control_fixture.py --data-dir .bot-control/workflow --project-dir '.test-data/Workflow Bot'
-.\.venv\Scripts\tgbots.exe open --data-dir .bot-control/workflow
-```
-
-Select the bot card and press **Start**. This fixture includes nested routers,
-FSM, a preparation command, arguments with spaces and a separate environment file.
-
-## Connect an existing bot
-
-Install this Python package into the bot's environment, then add:
+Установить этот пакет в Python-окружение бота и добавить в его главный файл:
 
 ```python
+from aiogram import Bot, Dispatcher
 from telegram_bot_control import start
 
-monitor = start(
-    bot=bot,
-    dispatcher=dp,
-    data_dir=r"C:\BotControl\data",
-    actions={"catalog:open": "catalog.open"},
-)
-dp.update.outer_middleware(monitor.middleware())
+async def main():
+    bot = Bot(token=...)  # существующая настройка бота
+    dp = Dispatcher()
 
-await dp.start_polling(bot)
+    monitor = start(
+        bot=bot,
+        dispatcher=dp,
+        # У всех ботов и приложения должна быть одна папка данных.
+        data_dir=r'C:\BotControl\data',
+        actions={'catalog:open': 'catalog.open'},
+    )
+    dp.update.outer_middleware(monitor.middleware())
+
+    # Здесь существующие роутеры и обработчики.
+    await dp.start_polling(bot)
 ```
 
-All bots and the desktop must use the same local data directory. On Linux, choose
-an absolute path such as `/srv/bot-control`. The import performs no registration
-or network request; recording begins during aiogram startup.
+`start()` определяет главный файл из места вызова. При нестандартной структуре
+передайте `entrypoint=__file__`. Импорт и `start()` не открывают окно и не требуют
+дополнительного процесса. Регистрация и запись начинаются в startup aiogram.
+После первого запуска бот появляется автоматически; повторный запуск не создаёт
+дубликат. Запускайте самого бота прежним способом.
 
-For webhook or custom runtimes, connect the dispatcher lifecycle and provide a
-`shutdown` callback. See the [Russian integration guide](README.ru.md) and
-[process-control reference](docs/process-control.md).
+Без `data_dir` используется `BOTCONTROL_HOME`, затем папка текущего владельца:
+Windows `%LOCALAPPDATA%\TelegramBotControl`, Linux
+`$XDG_STATE_HOME/telegram-bot-control` или `~/.local/state/telegram-bot-control`.
+База должна быть на локальном диске. Папка внутри репозитория `.bot-control/`
+исключена из Git. Произвольные Python-файлы на сервере система не сканирует.
 
-## Process control and complex launches
+Для webhook или ручного `feed_update()` вызывайте `await dp.emit_startup(bot=bot)`
+и `await dp.emit_shutdown(bot=bot)` в lifecycle вашего приложения. Повторное
+подключение одного monitor к тому же диспетчеру защищено от двойного учёта.
 
-The SDK records the actual Python arguments and working directory. Configure an
-explicit profile for wrappers, preparation or tools such as PowerShell:
+## Реальный тестовый бот
 
-```json
-{
-  "command": ["/opt/bots/.venv/bin/python", "-u", "-m", "shop_bot", "--config", "config/prod config.json"],
-  "cwd": "/opt/bots/shop",
-  "pre_start": [["/opt/bots/.venv/bin/python", "prepare.py"]],
-  "env_file": "/opt/bots/shop/.env",
-  "environment": {"BOT_MODE": "production"},
-  "required_env": ["BOT_TOKEN"]
-}
+`examples/test_bot/main.py` содержит `/start`, `/help`, кнопку каталога и `/error`.
+Токен берётся только из окружения:
+
+```powershell
+# BOT_TOKEN задайте в текущем окружении; не добавляйте токен в исходники.
+.\.venv\Scripts\python.exe examples\test_bot\main.py --data-dir .bot-control
 ```
 
-Arguments are passed with `shell=False`. Secrets belong in an environment file or
-an environment-variable reference. A failed preflight keeps an existing bot running.
-Graceful shutdown is attempted first; forced termination requires a separate action.
+Для проверки без Telegram: добавьте `--offline`. `--duration 60` ограничивает
+время запуска. У внешнего бота не должно быть одновременно другого polling-процесса;
+существующий webhook этот пример автоматически не удаляет.
 
-<details>
-<summary>Process controls and grouped exceptions</summary>
+## Приложение
 
-<img src="docs/assets/processes.png" alt="Start, Stop and Restart controls exercised on an offline aiogram workflow" width="1100">
-<img src="docs/assets/errors.png" alt="Grouped demonstration exceptions with expandable details" width="1100">
+Боковой список с поиском и фильтрами, общий обзор, карточка бота, графики,
+популярные команды и кнопки, группировка ошибок с раскрываемыми подробностями.
+Язык, часовой пояс и обновление настраиваются. По умолчанию история хранится:
+статистика — 365 дней, ошибки — 30, диагностика — 7. Можно изменить сроки
+или отключить автоматическое удаление. Сокращение срока требует подтверждения
+с количеством удаляемых записей. Свободное место внутри SQLite переиспользуется;
+размер файла после удаления не обязательно сразу уменьшается.
 
-</details>
+Для запуска собранной версии установите библиотеку в доступный Python и выберите
+его в настройках подключения. `BOTCONTROL_DESKTOP` может указывать на установленный
+exe. `tgbots open` в репозитории также умеет запускать development-версию Electron.
+В папке собранного приложения нужно сохранять все соседние файлы, не только exe.
 
-## Architecture
+## Linux-сервер и удалённое подключение
 
-```mermaid
-flowchart LR
-  SDK[aiogram bot + SDK] -->|events and heartbeat|DB[(Per-bot SQLite WAL)]
-  DB -->|addressed stop request|SDK
-  UI[Electron desktop] <-->|JSON lines over stdio or SSH|Bridge[Python bridge]
-  Bridge -->|queries and settings|DB
-  Bridge -->|launch profile|Runner[Detached launcher]
-  Runner -->|argv, cwd, environment|SDK
+На сервере установить библиотеку в окружения ботов и в Python, который будет
+читать их данные. В приложении открыть Настройки → Подключение → Linux по SSH,
+указать адрес, пользователя, порт, путь Python на сервере и общую папку данных.
+Используйте абсолютный путь интерпретатора, например `/opt/botcontrol/bin/python`.
+
+Сначала подтвердите ключ сервера обычной командой `ssh owner@server`. Зашифрованный
+клиентский ключ добавьте в `ssh-agent`. Приложение использует BatchMode и строгую
+проверку host key, не запрашивает пароль внутри окна и не открывает портов.
+Настройка сохраняется для одного сервера. Ручная диагностика транспорта:
+
+```text
+ssh -T owner@server /opt/botcontrol/bin/python -m telegram_bot_control.bridge --stdio
 ```
 
-The reader is a child process of the desktop. Each bot owns its recorder and file,
-so collection continues independently of the window. SSH runs the reader on the
-server; SQLite is always accessed on that machine's local disk.
+В stdin можно отправить JSON-строку `{"id":1,"method":"hello"}`.
+Настольный Linux требует графического окружения; на headless-сервере достаточно
+Python-библиотеки. SSH-режим этой версии рассчитан на POSIX shell сервера.
 
-[Design decisions](docs/case-study.md) · [Implementation overview](docs/architecture.md)
-
-## Verification
+## Проверки и сборка
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
 pnpm --dir desktop run test
-pnpm --dir desktop run format:check
 pnpm --dir desktop run build
-.\.venv\Scripts\python.exe scripts/release_check.py
+# После записи событий demo в выбранную папку:
+$env:BOTCONTROL_HOME = (Resolve-Path .bot-control).Path
+pnpm --dir desktop run smoke
+pnpm --dir desktop run pack
 ```
 
-The suite covers genuine aiogram handling, distinct-user aggregation, deduplication,
-retention, backups, process identity, concurrent starts, complex launch profiles,
-PowerShell, failed preparation and graceful/forced shutdown. Electron smoke tests
-press the real controls and inspect the resulting state.
+Smoke-тест запускает скрытое окно, проверяет реальные данные через stdio, выбор бота,
+ошибки, языки и подтверждение очистки. Снимки — `desktop/test-output/`.
+Windows-сборка — `desktop/release/win-unpacked/Telegram Bot Control.exe`.
+Для установщика есть `pnpm --dir desktop run dist`; для Linux сборка выполняется на Linux.
+Подпись приложения не настроена. Python устанавливается отдельно, внутрь exe не вшит.
 
-[Recorded validation and remaining platform checks](docs/validation.md).
-Windows was exercised locally. GitHub Actions are configured for Windows and Linux;
-hosted CI results will be available after this repository is published.
+Нагрузочная проверка в новой пустой папке:
 
-## Release and installation
+```powershell
+.\.venv\Scripts\python.exe scripts\benchmark.py --bots 100 --seconds 10 --data-dir .test-data\benchmark-new
+```
 
-A release contains the Python wheel, Python source distribution, full source archive,
-Windows installer, portable Windows folder archive and SHA256 checksums. The tag
-workflow also builds a Linux AppImage. Python is installed separately and selected
-in desktop connection settings.
+[Результаты проверок и ограничения](docs/validation.md).
 
-The desktop binaries are unsigned preview builds. Review the release notes and
-verify checksums before use. Local preparation and later GitHub publication are
-separate steps: [release guide](docs/releasing.md).
+Согласованную резервную копию работающих SQLite-баз можно снять командой
+`python scripts/backup.py --data-dir .bot-control --output .test-data/backup-new`.
+Используйте новую папку назначения; существующие копии не перезаписываются.
+Для восстановления остановите ботов и приложение, затем верните базы и settings.json
+из копии в общую папку данных. Не копируйте активный .sqlite3 без его WAL вручную.
 
-## Scope
+## Ограничения
 
-- One owner and one server, with separate OS processes for independently controlled bots.
-- No Docker or multi-user account/role system. Web access is owner-only.
-- No systemd, Windows-service or external-supervisor adapter yet.
-- Raw updates, message bodies and full callback payloads are excluded from telemetry.
-- User identifiers are pseudonymized per bot for distinct counts.
-- Abrupt shutdown or storage failure can lose queued telemetry; loss counters are exposed.
-- Retention defaults: statistics 365 days, errors 30 days, diagnostics 7 days.
+История начинается после подключения библиотеки. Тексты сообщений, исходные updates,
+токены и исходный callback payload не сохраняются. Для индивидуальных callback-действий
+задайте безопасные метки через `actions`; неизвестные payload считаются общим callback.
+URL-кнопки без update не отслеживаются. Ошибка в обработчике фиксируется и продолжает
+исходное распространение; для исключения, поглощённого собственным middleware,
+можно явно вызвать `monitor.capture_error(error, update_id=...)`.
+Ошибки до старта библиотеки и весь консольный вывод автоматически не собираются.
 
-[Security model](SECURITY.md) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
-
-## Author and license
-
-Created and maintained by the repository owner. Original project code and assets
-are available under the [MIT license](LICENSE). Third-party components retain their
-respective licenses; see [notices](THIRD_PARTY_NOTICES.md).
+Heartbeat подтверждает работу интеграции, а не Telegram. При аварийном исчезновении
+процесса показывается «Нет связи», при штатном shutdown — «Остановлен».
+При недоступном диске очередь ограничена; часть телеметрии может потеряться,
+счётчики потерь и сбоев записи видны в карточке. Управление процессами работает
+для обновлённой библиотеки: старого бота нужно один раз запустить с ней вручную.
+Управление внешними Windows-службами и systemd пока не добавлено.

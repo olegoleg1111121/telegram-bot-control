@@ -1,5 +1,8 @@
 export const ru = {
   overview: 'Обзор сервера',
+  actions: 'События и действия',
+  actionsSubtitle: 'Кнопки, события в коде и функции: частота, время и результат.',
+  integration: 'Подключить с ИИ',
   errors: 'Ошибки',
   settings: 'Настройки',
   help: 'Обучение и подключение',
@@ -39,9 +42,9 @@ export const ru = {
   from: 'С',
   to: 'По',
   commandTitle: 'Популярные команды',
-  actionTitle: 'Действия с кнопками',
+  actionTitle: 'События и действия',
   noCommands: 'Команд за этот период нет',
-  noActions: 'Нажатий за этот период нет',
+  noActions: 'Событий за этот период нет',
   fleetTitle: 'Подключённые боты',
   botName: 'Бот',
   status: 'Состояние',
@@ -134,6 +137,9 @@ export const ru = {
 };
 export type TranslationKey = keyof typeof ru;
 export const en: Record<TranslationKey, string> = {
+  actions: 'Actions and events',
+  actionsSubtitle: 'Buttons, code events and functions: frequency, time and outcome.',
+  integration: 'Connect with AI',
   overview: 'Server overview',
   errors: 'Errors',
   settings: 'Settings',

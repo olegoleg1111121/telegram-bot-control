@@ -30,6 +30,7 @@ RPC_METHODS = frozenset(
         "save_launch_profile",
         "control_bot",
         "logs",
+        "action_analytics",
         "inspect_project",
         "register_project",
         "preview_retention",

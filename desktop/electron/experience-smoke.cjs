@@ -120,6 +120,18 @@ async function run(window, root, { app, lifecycle }) {
   }
   const saved = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), 'desktop.json')));
   await require('./web-smoke.cjs').run(window, root);
+  await click('nav-integration');
+  await waitFor('document.querySelector("[data-testid=ai-prompt]") !== null');
+  await click('copy-ai-prompt');
+  await waitFor(
+    'document.querySelector("[data-testid=copy-ai-prompt]").textContent.includes("Copied")',
+  );
+  assert.equal(
+    require('electron').clipboard.readText(),
+    await evaluate('document.querySelector("[data-testid=ai-prompt]").value'),
+  );
+  console.log('AI_DESKTOP_CLIPBOARD_OK: complete integration prompt copied through desktop IPC.');
+
   assert.equal(saved.guideSeenVersion, 1);
   assert.equal(saved.language, 'en');
   const loaded = new Promise((resolve) => window.webContents.once('did-finish-load', resolve));

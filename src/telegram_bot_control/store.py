@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import ensure_private_directory, load_settings
+from .action_stats import action_query
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -27,6 +28,15 @@ CREATE TABLE IF NOT EXISTS events(
 );
 CREATE INDEX IF NOT EXISTS events_time ON events(ts);
 CREATE INDEX IF NOT EXISTS events_user ON events(user_key, ts);
+CREATE TABLE IF NOT EXISTS action_events(
+ id TEXT PRIMARY KEY, ts REAL NOT NULL, name TEXT NOT NULL, user_key TEXT,
+ outcome TEXT NOT NULL, duration_ms REAL NOT NULL, source TEXT NOT NULL,
+ update_id TEXT NOT NULL, error_type TEXT NOT NULL, error_message TEXT NOT NULL,
+ traceback TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS actions_time ON action_events(ts);
+CREATE INDEX IF NOT EXISTS actions_name ON action_events(name,ts);
+CREATE INDEX IF NOT EXISTS actions_origin ON action_events(update_id,name);
 CREATE TABLE IF NOT EXISTS errors(
  event_id TEXT PRIMARY KEY, ts REAL NOT NULL, fingerprint TEXT NOT NULL,
  kind TEXT NOT NULL, type TEXT NOT NULL, message TEXT NOT NULL, traceback TEXT NOT NULL
@@ -190,6 +200,25 @@ class Store:
                         if user is not None
                         else None
                     )
+                    if event["kind"] == "action":
+                        error = event.get("error") or {}
+                        connection.execute(
+                            "INSERT OR IGNORE INTO action_events VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                            (
+                                hmac.new(secret, event["id"].encode(), hashlib.sha256).hexdigest(),
+                                event["ts"],
+                                event["label"],
+                                user_key,
+                                event["outcome"],
+                                event["duration_ms"],
+                                event["source"],
+                                event.get("update_id", ""),
+                                error.get("type", ""),
+                                error.get("message", ""),
+                                error.get("traceback", ""),
+                            ),
+                        )
+                        continue
                     cursor = connection.execute(
                         "INSERT OR IGNORE INTO events VALUES (?, ?, ?, ?, ?, ?, ?)",
                         (
@@ -242,6 +271,7 @@ def cleanup_connection(
     with connection:
         for table, key in (
             ("events", "statistics_days"),
+            ("action_events", "statistics_days"),
             ("errors", "errors_days"),
             ("diagnostics", "diagnostics_days"),
             ("logs", "logs_days"),
@@ -444,12 +474,19 @@ def read_snapshot(directory: Path, params: dict[str, Any]) -> dict[str, Any]:
                 )
                 item["count"] += row["count"]
                 item["errors"] += row["errors"]
-            for kind, target in (("command", commands), ("callback", actions)):
+            for kind, target in (("command", commands),):
                 for row in connection.execute(
                     "SELECT label, COUNT(*) count FROM events WHERE ts>=? AND ts<? AND kind=? GROUP BY label",
                     (since, until, kind),
                 ):
                     target[row["label"]] = target.get(row["label"], 0) + row["count"]
+            for row in connection.execute(
+                "WITH action_rows AS ("
+                + action_query(connection)
+                + ") SELECT name,COUNT(*) count FROM action_rows WHERE ts>=? AND ts<? GROUP BY name",
+                (since, until),
+            ):
+                actions[row["name"]] = actions.get(row["name"], 0) + row["count"]
             error_filter = "ts>=? AND ts<? AND (message LIKE ? OR type LIKE ?)"
             error_args = (since, until, f"%{query}%", f"%{query}%")
             error_groups += connection.execute(

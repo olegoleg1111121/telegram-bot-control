@@ -40,7 +40,14 @@ function webClient(version: string): Window['botControl'] {
       if (next.language) localStorage.setItem('web-language', next.language);
     },
     copyText: async (text) => {
-      if (navigator.clipboard) return navigator.clipboard.writeText(text);
+      if (navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return;
+        } catch {
+          /* Browser policy may require manual selection; try the legacy API. */
+        }
+      }
       const input = document.createElement('textarea');
       input.value = text;
       document.body.appendChild(input);
@@ -52,6 +59,7 @@ function webClient(version: string): Window['botControl'] {
     onOpenGuide: () => () => {},
     snapshot: (params) => rpc('snapshot', params),
     logs: (params) => rpc('logs', params),
+    actions: (params) => rpc('action_analytics', params),
     inspectProject: (directory, entrypoint) => rpc('inspect_project', { directory, entrypoint }),
     registerProject: (params) => rpc('register_project', params),
     connection: async () => {

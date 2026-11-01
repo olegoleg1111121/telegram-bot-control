@@ -30,13 +30,21 @@ class Bridge:
             self.web_manager.stop()
 
     def preview(self, settings: dict[str, Any]) -> dict[str, int]:
-        result = {"events": 0, "errors": 0, "diagnostics": 0, "logs": 0, "resources": 0}
+        result = {
+            "events": 0,
+            "action_events": 0,
+            "errors": 0,
+            "diagnostics": 0,
+            "logs": 0,
+            "resources": 0,
+        }
         for path in mailbox_files(self.directory):
             connection = None
             try:
                 connection = reader(path)
                 for table, key in (
                     ("events", "statistics_days"),
+                    ("action_events", "statistics_days"),
                     ("errors", "errors_days"),
                     ("diagnostics", "diagnostics_days"),
                     ("logs", "logs_days"),
@@ -55,7 +63,14 @@ class Bridge:
         return result
 
     def cleanup(self, settings: dict[str, Any]) -> dict[str, int]:
-        result = {"events": 0, "errors": 0, "diagnostics": 0, "logs": 0, "resources": 0}
+        result = {
+            "events": 0,
+            "action_events": 0,
+            "errors": 0,
+            "diagnostics": 0,
+            "logs": 0,
+            "resources": 0,
+        }
         for path in mailbox_files(self.directory):
             connection = None
             try:
@@ -73,6 +88,10 @@ class Bridge:
         return result
 
     def call(self, method: str, params: dict[str, Any]) -> Any:
+        if method == "action_analytics":
+            from .action_stats import read_actions
+
+            return read_actions(self.directory, params)
         if method == "logs":
             return read_logs(self.directory, params)
         if method == "inspect_project":

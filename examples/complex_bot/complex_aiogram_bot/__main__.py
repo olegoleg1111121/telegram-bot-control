@@ -56,13 +56,16 @@ async def main(args):
     async def name(message, state: FSMContext):
         await state.update_data(name="not recorded in telemetry")
         await state.clear()
+        monitor.track_action("form.completed")
         await message.answer("OK")
 
     @root.callback_query(F.data)
+    @monitor.action("catalog.open")
     async def callback(event):
         await event.answer()
 
     @root.message(Command("error"))
+    @monitor.action("fixture.failure")
     async def fail(message):
         raise RuntimeError("Complex fixture controlled error")
 

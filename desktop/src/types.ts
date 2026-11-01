@@ -79,6 +79,7 @@ export type ProjectInfo = {
   directory: string;
   entrypoints: string[];
   interpreters: string[];
+  interpreter_options?: { path: string; kind: 'project_venv' | 'system' | 'dashboard' }[];
   has_env: boolean;
   dependencies: string[];
   integration?: {
@@ -166,9 +167,50 @@ export type SnapshotParams = {
   error_query?: string;
   resource_since?: number;
 };
+export type ActionParams = {
+  since: number;
+  until: number;
+  bot_id?: string;
+  name?: string;
+  query?: string;
+  source?: string;
+  outcome?: string;
+  offset?: number;
+  bucket_seconds?: number;
+};
+export type ActionSummary = {
+  count: number;
+  users: number;
+  errors: number;
+  cancelled: number;
+  avg_ms: number;
+};
+export type ActionAnalytics = {
+  summary: ActionSummary;
+  actions: (ActionSummary & { name: string; first_seen: number; last_seen: number })[];
+  series: { ts: number; count: number; errors: number }[];
+  recent: {
+    id: string;
+    ts: number;
+    name: string;
+    outcome: string;
+    duration_ms: number;
+    source: string;
+    error_type: string;
+    error_message: string;
+    traceback: string;
+    bot_id: string;
+    bot_name: string;
+  }[];
+  total: number;
+  bucket_seconds: number;
+  warnings: string[];
+  fetched_at: number;
+};
 declare global {
   interface Window {
     botControl: {
+      actions(params: ActionParams): Promise<ActionAnalytics>;
       logs(params: {
         bot_id: string;
         level?: number;

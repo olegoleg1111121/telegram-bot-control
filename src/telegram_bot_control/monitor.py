@@ -26,6 +26,7 @@ from .privacy import describe_error
 from .store import Store
 from .processes import runtime_identity
 from .telemetry import LogCaptureHandler, ResourceSampler
+from .custom_actions import CONTEXT, decorate, track
 
 logger = logging.getLogger(__name__)
 COMMAND = re.compile(r"^/([A-Za-z0-9_]{1,32})(?:@[A-Za-z0-9_]+)?(?:\s|$)")
@@ -167,11 +168,29 @@ class Monitor:
         except Exception:
             return "callback"
 
-    def record(self, event: dict[str, Any]) -> None:
+    def track_action(
+        self,
+        name: str,
+        *,
+        user_id: int | None = None,
+        outcome: str = "success",
+        duration_ms: float = 0,
+        event_id: str | None = None,
+    ) -> bool:
+        """Record an explicit event; use stable names without personal data or secrets."""
+        return track(
+            self, name, user_id=user_id, outcome=outcome, duration_ms=duration_ms, event_id=event_id
+        )
+
+    def action(self, name: str):
+        """Decorate an existing sync/async function to measure its calls and outcomes."""
+        return decorate(self, name)
+
+    def record(self, event: dict[str, Any]) -> bool:
         with self._queue_lock:
             if self._closing or len(self._queue) >= self.capacity:
                 self.dropped += 1
-                return
+                return False
             wake = not self._queue
             self._queue.append(event)
         if wake and self._loop and not self._loop.is_closed():
@@ -179,6 +198,7 @@ class Monitor:
                 self._loop.call_soon_threadsafe(self._wake.set)
             except RuntimeError:
                 pass
+        return True
 
     def capture_error(self, error: BaseException, *, update_id: int | None = None) -> None:
         """Optional hook for exceptions swallowed by custom middleware/error handlers."""
@@ -350,6 +370,7 @@ class TelemetryMiddleware(BaseMiddleware):
             "duration_ms": 0,
         }
         started = time.perf_counter()
+        context_token = CONTEXT.set((id(self.monitor), record.get("user_id"), record["id"]))
         try:
             result = await handler(event, data)
             if result is UNHANDLED:
@@ -363,6 +384,7 @@ class TelemetryMiddleware(BaseMiddleware):
             record["error"] = describe_error(error, [self.monitor.bot.token])
             raise
         finally:
+            CONTEXT.reset(context_token)
             record["duration_ms"] = (time.perf_counter() - started) * 1000
             self.monitor.record(record)
 

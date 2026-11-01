@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronLeft, ChevronRight, Copy, FolderSearch, Loader2, X } from 'lucide-react';
 import type { LaunchProfile, ProjectInfo } from './types';
+import { integrationPrompt } from './ai-prompt';
 import { processErrors } from './process-i18n';
 import './wizard.css';
 
@@ -8,10 +9,12 @@ export default function ProjectWizard({
   language,
   close,
   added,
+  dataDir,
 }: {
   language: 'ru' | 'en';
   close: () => void;
   added: (id: string) => void;
+  dataDir?: string;
 }) {
   const ru = language === 'ru';
   const dialog = useRef<HTMLDialogElement>(null);
@@ -213,7 +216,7 @@ export default function ProjectWizard({
                   </datalist>
                 </label>
                 <label>
-                  {ru ? 'Python окружения бота' : 'Bot Python interpreter'}
+                  {ru ? 'Python бота (обычный или venv)' : 'Bot Python (regular or venv)'}
                   <input
                     data-testid="wizard-python"
                     required
@@ -238,9 +241,50 @@ export default function ProjectWizard({
               </button>
               <p>
                 {ru
-                  ? 'Установите wheel telegram-bot-control из релиза в выбранное окружение. Код ниже разместите после создания Bot и Dispatcher, перед запуском polling или webhook.'
-                  : 'Install the release wheel into the selected environment. Place this code after creating Bot and Dispatcher, before polling or webhook startup.'}
+                  ? 'Установите пакет через выбранный Python: python -m pip install --upgrade telegram-bot-control. Venv необязателен. Код ниже разместите после создания Bot и Dispatcher, перед запуском polling или webhook.'
+                  : 'Use the selected Python: python -m pip install --upgrade telegram-bot-control. A venv is optional. Place this code after creating Bot and Dispatcher, before polling or webhook startup.'}
               </p>
+              <details className="wizard-ai">
+                <summary>
+                  {ru
+                    ? 'Подключаете с помощью ИИ? Готовый промпт'
+                    : 'Working with AI? Copy an integration prompt'}
+                </summary>
+                <p>
+                  {ru
+                    ? 'В отдельном разделе «Подключить с ИИ» есть полная инструкция и выбор обычного Python или venv.'
+                    : 'The “Connect with AI” page has full instructions for regular Python and venv.'}
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    void window.botControl
+                      .copyText(
+                        integrationPrompt(language, {
+                          interpreter: python,
+                          dataDir,
+                          entrypoint,
+                          environment:
+                            info.interpreter_options?.find((p) => p.path === python)?.kind ===
+                            'project_venv'
+                              ? 'venv'
+                              : 'system',
+                        }),
+                      )
+                      .then(() => setCopied(true))
+                      .catch((e) => setError(explain(e)))
+                  }
+                >
+                  <Copy size={14} />
+                  {copied
+                    ? ru
+                      ? 'Скопировано'
+                      : 'Copied'
+                    : ru
+                      ? 'Копировать промпт для ИИ'
+                      : 'Copy AI prompt'}
+                </button>
+              </details>
               {info.integration && (
                 <>
                   {info.integration.already_imported && (

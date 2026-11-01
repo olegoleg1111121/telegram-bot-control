@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import os
+import shutil
 import sys
 import time
 import uuid
@@ -25,17 +26,30 @@ def inspect_project(value: str) -> dict[str, Any]:
         if path.is_file() and path.resolve().is_relative_to(directory):
             candidates.append(str(path))
     python = []
+    options = []
+
+    def add_python(value, kind):
+        if not value:
+            return
+        path = Path(value).expanduser().absolute()
+        # Keep venv symlinks: resolving them would select the base Python on Linux.
+        if path.is_file() and str(path) not in python:
+            python.append(str(path))
+            options.append({"path": str(path), "kind": kind})
+
     for venv in (".venv", "venv", "env"):
         for suffix in ("Scripts/python.exe", "bin/python"):
             path = directory / venv / suffix
-            if path.is_file():
-                python.append(str(path))
-    if sys.executable not in python:
-        python.append(sys.executable)
+            add_python(path, "project_venv")
+    for name in ("python", "python3"):
+        add_python(shutil.which(name), "system")
+    add_python(getattr(sys, "_base_executable", None), "system")
+    add_python(sys.executable, "dashboard")
     return {
         "directory": str(directory),
         "entrypoints": candidates,
         "interpreters": python,
+        "interpreter_options": options,
         "has_env": (directory / ".env").is_file(),
         "dependencies": [
             name

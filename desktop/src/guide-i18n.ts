@@ -26,15 +26,15 @@ export const guideRu = {
   connectionBody:
     'Для этого Windows-компьютера выберите «Локально». Для Linux-сервера — SSH. Укажите Python с установленной библиотекой и одну общую папку данных для всех ботов.',
   connectionPython:
-    'Python устанавливается отдельно. В его окружении должен быть пакет telegram-bot-control из нашего wheel. У каждого бота библиотека устанавливается в его собственное окружение.',
+    'Python устанавливается отдельно. Установите telegram-bot-control через Python самого бота. Поддерживается обычный Python и существующий venv; создавать окружение специально не требуется.',
   connectionOk: 'Подключение проверено. Настройки сохранены.',
   connectionIdle:
     'Нажмите «Подключиться», чтобы проверить Python и доступ к папке. Можно продолжить обучение и настроить подключение позже.',
   installTitle: 'Подключите библиотеку к боту',
   installBody:
-    'Скачайте Python wheel из релиза и установите его в окружение конкретного бота. В команде замените путь на расположение скачанного файла. Токен не вставляется в панель.',
+    'Установите пакет через тот же Python, которым запускается бот. Виртуальное окружение необязательно. Сохраните свои .env, логгер и роутеры. Готовое задание для помощника есть в разделе «Подключить с ИИ».',
   installLabel: 'В терминале, используя Python вашего бота',
-  installCommand: 'python -m pip install "<полный-путь-к-wheel-файлу.whl>"',
+  installCommand: 'python -m pip install --upgrade telegram-bot-control',
   codeLabel: 'Внутри main(), после создания bot и dp',
   codeBody:
     'Добавьте этот фрагмент перед существующим await dp.start_polling(bot). Не создавайте второй Bot или Dispatcher и не дублируйте start_polling().',
@@ -96,15 +96,15 @@ export const guideEn: GuideTranslation = {
   connectionBody:
     'Choose Local for this Windows computer, or SSH for a Linux server. Select a Python environment with the SDK installed and one shared data directory for your bots.',
   connectionPython:
-    'Python is installed separately. Install telegram-bot-control from our wheel into this interpreter and into each bot’s own environment.',
+    'Python is installed separately. Install telegram-bot-control through the bot’s own Python. Regular Python and existing venvs are supported; creating a venv is optional.',
   connectionOk: 'Connection verified. Settings saved.',
   connectionIdle:
     'Press Connect to check Python and the data directory. You may continue the guide and configure the connection later.',
   installTitle: 'Connect the SDK to your bot',
   installBody:
-    'Download the Python wheel from the release and install it in this bot’s environment. Replace the path below with the downloaded file. No Telegram token is entered in the dashboard.',
+    'Install using the Python that runs your bot. A venv is optional. Keep existing .env, logging and routers. The Connect with AI page includes a ready-to-copy integration task.',
   installLabel: 'In a terminal, using your bot’s Python',
-  installCommand: 'python -m pip install "<full-path-to-downloaded-wheel.whl>"',
+  installCommand: 'python -m pip install --upgrade telegram-bot-control',
   codeLabel: 'Inside main(), after creating bot and dp',
   codeBody:
     'Insert this before your existing await dp.start_polling(bot). Keep your existing Bot and Dispatcher and do not add a second start_polling() call.',

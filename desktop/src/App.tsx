@@ -33,46 +33,18 @@ import Onboarding from './Onboarding';
 import WebSettings from './WebSettings';
 import BotDiagnostics from './BotDiagnostics';
 import ProjectWizard from './ProjectWizard';
+import ActionAnalytics from './ActionAnalytics';
+import AiIntegration from './AiIntegration';
+import { isoDay, periodWindow } from './time';
 
 type Lang = 'ru' | 'en';
-type Tab = 'overview' | 'errors' | 'settings';
+type Tab = 'overview' | 'errors' | 'actions' | 'integration' | 'settings';
 function stored<T>(key: string, fallback: T): T {
   try {
     return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback;
   } catch {
     return fallback;
   }
-}
-function isoDay(date: Date, zone: string): string {
-  const p = new Intl.DateTimeFormat('en', {
-    timeZone: zone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).formatToParts(date);
-  const part = (name: string) => p.find((x) => x.type === name)!.value;
-  return `${part('year')}-${part('month')}-${part('day')}`;
-}
-function midnight(day: string, zone: string): number {
-  const [year, month, date] = day.split('-').map(Number);
-  const target = Date.UTC(year, month - 1, date);
-  let guess = target;
-  for (let i = 0; i < 4; i++) {
-    const p = new Intl.DateTimeFormat('en', {
-      timeZone: zone,
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
-      hourCycle: 'h23',
-    }).formatToParts(guess);
-    const n = (type: string) => Number(p.find((x) => x.type === type)!.value);
-    guess +=
-      target - Date.UTC(n('year'), n('month') - 1, n('day'), n('hour'), n('minute'), n('second'));
-  }
-  return guess / 1000;
 }
 
 export default function App() {
@@ -81,6 +53,9 @@ export default function App() {
   );
   const t = useCallback((key: TranslationKey) => (language === 'ru' ? ru : en)[key], [language]);
   const [tab, setTab] = useState<Tab>('overview');
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [tab]);
   const [selectedId, setSelectedId] = useState('');
   const [search, setSearch] = useState('');
   const [stateFilter, setStateFilter] = useState('');
@@ -185,17 +160,7 @@ export default function App() {
       busy = true;
       try {
         const now = Date.now() / 1000;
-        let since =
-          range === 'today'
-            ? midnight(isoDay(new Date(), timezone), timezone)
-            : now - Number(range) * 86400;
-        let until = now + 1;
-        if (range === 'custom') {
-          since = midnight(customFrom, timezone);
-          const nextDay = new Date(customTo + 'T00:00:00Z');
-          nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-          until = midnight(nextDay.toISOString().slice(0, 10), timezone);
-        }
+        const { since, until } = periodWindow(range, customFrom, customTo, timezone);
         const data = await window.botControl.snapshot({
           since,
           until,
@@ -366,6 +331,14 @@ export default function App() {
             {t('errors')}
             {!!metrics?.errors && <span className="nav-count">{format(metrics.errors)}</span>}
           </button>
+          <button
+            data-testid="nav-actions"
+            className={tab === 'actions' ? 'active' : ''}
+            onClick={() => changeTab('actions')}
+          >
+            <MousePointer2 size={17} />
+            {t('actions')}
+          </button>
         </nav>
         <div className="section-label bot-label">
           {t('bots')}
@@ -432,6 +405,14 @@ export default function App() {
           )}
         </div>
         <div className="sidebar-bottom">
+          <button
+            data-testid="nav-integration"
+            className={tab === 'integration' ? 'active' : ''}
+            onClick={() => changeTab('integration')}
+          >
+            <Terminal size={17} />
+            {t('integration')}
+          </button>
           <button
             data-testid="open-guide"
             onClick={() => {
@@ -505,7 +486,13 @@ export default function App() {
               <code>{snapshot.meta.warnings.join(', ')}</code>
             </div>
           )}
-          {tab === 'settings' ? (
+          {tab === 'integration' ? (
+            <AiIntegration
+              language={language}
+              bots={bots}
+              dataDir={snapshot?.meta.data_dir || profile?.dataDir}
+            />
+          ) : tab === 'settings' ? (
             <>
               <div className="page-heading">
                 <div>
@@ -693,14 +680,22 @@ export default function App() {
                     {selected ? `@${selected.username || selected.bot_id}` : 'OVERVIEW'}
                   </div>
                   <h1>
-                    {tab === 'errors' ? t('errorsTitle') : selected ? selected.name : t('title')}
+                    {tab === 'actions'
+                      ? t('actions')
+                      : tab === 'errors'
+                        ? t('errorsTitle')
+                        : selected
+                          ? selected.name
+                          : t('title')}
                   </h1>
                   <p>
-                    {tab === 'errors'
-                      ? t('errorsSubtitle')
-                      : selected
-                        ? t('sessionHint')
-                        : t('subtitle')}
+                    {tab === 'actions'
+                      ? t('actionsSubtitle')
+                      : tab === 'errors'
+                        ? t('errorsSubtitle')
+                        : selected
+                          ? t('sessionHint')
+                          : t('subtitle')}
                   </p>
                 </div>
                 {tab !== 'errors' && (
@@ -762,6 +757,19 @@ export default function App() {
                   <Loader2 className="spin" size={32} />
                   <h2>{t('connecting')}</h2>
                 </div>
+              ) : tab === 'actions' ? (
+                <ActionAnalytics
+                  language={language}
+                  bots={bots}
+                  selectedId={selectedId}
+                  selectBot={setSelectedId}
+                  range={range}
+                  from={customFrom}
+                  to={customTo}
+                  timezone={timezone}
+                  refresh={refresh}
+                  revision={revision}
+                />
               ) : tab === 'errors' ? (
                 <section className="panel errors-panel">
                   <div className="errors-toolbar">
@@ -1033,6 +1041,7 @@ export default function App() {
       {wizardOpen && (
         <ProjectWizard
           language={language}
+          dataDir={snapshot?.meta.data_dir || profile?.dataDir}
           close={() => setWizardOpen(false)}
           added={(id) => {
             setWizardOpen(false);

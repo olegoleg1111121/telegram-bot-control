@@ -50,6 +50,92 @@ async function run(browser, root, profile, wait) {
     path.join(output, 'existing-logger.png'),
     (await browser.webContents.capturePage()).toPNG(),
   );
+  await click('nav-actions');
+  await wait(page, 'document.querySelector("[data-testid=action-name]") !== null');
+  await wait(
+    page,
+    'document.querySelector(".action-ranking").textContent.includes("form.completed") && document.querySelector(".action-ranking").textContent.includes("fixture.failure")',
+  );
+  assert.equal(await page('document.querySelectorAll("[data-testid=actions-chart]").length'), 1);
+  assert.ok(
+    await page(
+      'document.querySelector(".action-chart .panel-title svg").getBoundingClientRect().height < 30',
+    ),
+  );
+  await page(
+    `(() => {const el=document.querySelector('[data-testid=actions-query]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,'form.completed');el.dispatchEvent(new Event('input',{bubbles:true}));})()`,
+  );
+  await wait(
+    page,
+    'document.querySelectorAll("[data-testid=action-name]").length===1 && document.querySelector("[data-testid=action-name]").textContent==="form.completed"',
+  );
+  await click('action-name');
+  await wait(page, 'document.querySelector("[data-testid=actions-clear]") !== null');
+  assert.ok(
+    await page('document.querySelector("[data-testid=action-event] time").dateTime.endsWith("Z")'),
+  );
+  await click('actions-clear');
+  await page(
+    `(() => {const el=document.querySelector('[data-testid=actions-query]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,'');el.dispatchEvent(new Event('input',{bubbles:true}));})()`,
+  );
+  await page(
+    `(() => {const el=document.querySelector('[data-testid=actions-outcome]');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,'error');el.dispatchEvent(new Event('change',{bubbles:true}));})()`,
+  );
+  await wait(
+    page,
+    'document.querySelector("[data-testid=action-event]") && [...document.querySelectorAll(".action-outcome")].every(el=>el.classList.contains("error"))',
+  );
+  await click('action-event');
+  assert.ok(
+    await page(
+      'document.querySelector(".action-event-detail").textContent.includes("RuntimeError")',
+    ),
+  );
+  fs.writeFileSync(
+    path.join(output, 'action-analytics.png'),
+    (await browser.webContents.capturePage()).toPNG(),
+  );
+  browser.setSize(412, 850);
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  assert.equal(
+    await page('document.documentElement.scrollWidth <= innerWidth+1'),
+    true,
+    'mobile actions must fit',
+  );
+  await click('nav-integration');
+  await wait(page, 'document.querySelector("[data-testid=ai-prompt]") !== null');
+  assert.ok(
+    await page(
+      'document.querySelector("[data-testid=ai-prompt]").value.includes("НЕ обязательно")',
+    ),
+  );
+  assert.equal(
+    await page('document.documentElement.scrollWidth <= innerWidth+1'),
+    true,
+    'mobile AI guide must fit',
+  );
+  await click('copy-ai-prompt');
+  await wait(
+    page,
+    'document.querySelector("[data-testid=copy-ai-prompt]").textContent.includes("Скопировано") || document.querySelector("[data-testid=ai-copy-error]") !== null',
+  );
+  assert.ok(
+    await page(
+      `(() => { const field=document.querySelector('[data-testid=ai-prompt]'); return !document.querySelector('[data-testid=ai-copy-error]') || field.selectionEnd-field.selectionStart===field.value.length; })()`,
+    ),
+  );
+  await page(
+    `(() => {const el=document.querySelector('[data-testid=ai-environment]');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,'venv');el.dispatchEvent(new Event('change',{bubbles:true}));})()`,
+  );
+  await wait(
+    page,
+    'document.querySelector("[data-testid=ai-prompt]").value.includes("existing virtual environment")',
+  );
+  await page(`document.querySelector('[data-bot-id="940000001"]').click()`);
+  await wait(page, 'document.querySelector("[data-testid=resource-memory]") !== null');
+  console.log(
+    'ACTIONS_AI_SMOKE_OK: custom events/functions, timeline, search/name/outcome filters, exact timestamps, error detail, copyable prompt, optional venv, responsive layout.',
+  );
   browser.setSize(412, 850);
   await new Promise((resolve) => setTimeout(resolve, 300));
   assert.equal(
@@ -125,7 +211,7 @@ async function run(browser, root, profile, wait) {
     page,
     'document.querySelector("[data-testid=launch-output]")?.textContent.includes("Traceback")',
   );
-  assert.ok(await page('document.querySelector("[data-testid=launch-diagnostics]").open'));
+  await wait(page, 'document.querySelector("[data-testid=launch-diagnostics]")?.open === true');
   await page(
     'document.querySelector("[data-testid=launch-diagnostics]").scrollIntoView({block:"center"})',
   );

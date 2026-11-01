@@ -1,0 +1,232 @@
+.action-analytics,
+.integration-page {
+  min-width: 0;
+}
+.action-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.action-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted, #94a3b8);
+}
+.action-filters select,
+.action-filters input {
+  width: 100%;
+  min-width: 0;
+}
+.action-search {
+  grid-column: 1/-1;
+}
+.action-search > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.action-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+.action-metrics > div {
+  padding: 18px;
+}
+.action-metrics small {
+  display: block;
+  color: #91a0b6;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.action-metrics strong {
+  font-size: 27px;
+  font-weight: 600;
+}
+.action-chart,
+.action-ranking,
+.action-recent {
+  margin-top: 18px;
+  padding: 22px;
+}
+.action-chart h2,
+.action-ranking h2,
+.action-recent h2 {
+  font-size: 15px;
+  margin: 0 0 18px;
+}
+.action-chart > svg {
+  display: block;
+  width: 100%;
+  height: 180px;
+  margin-top: 18px;
+}
+.action-chart-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  color: #91a0b6;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+.action-table-scroll {
+  overflow: auto;
+}
+.action-ranking table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+.action-ranking th {
+  color: #91a0b6;
+  font-weight: 500;
+}
+.action-ranking td,
+.action-ranking th {
+  padding: 11px 9px;
+  white-space: nowrap;
+  border-bottom: 1px solid #ffffff0d;
+}
+.selected-action {
+  background: #5ed9c50c;
+}
+.action-empty {
+  color: #91a0b6;
+  font-size: 13px;
+  padding: 20px 0;
+}
+.action-event {
+  border-bottom: 1px solid #ffffff0d;
+  font-size: 12px;
+}
+.action-event summary {
+  display: grid;
+  grid-template-columns: 155px minmax(120px, 1fr) minmax(100px, 1fr) 100px 80px;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 0;
+  cursor: pointer;
+}
+.action-event summary strong,
+.action-event summary span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.action-event time {
+  color: #91a0b6;
+}
+.action-outcome.success {
+  color: #5ed9c5;
+}
+.action-outcome.error {
+  color: #f6a0a0;
+}
+.action-outcome.cancelled {
+  color: #e7c58c;
+}
+.action-event-detail {
+  padding: 4px 0 18px;
+  color: #91a0b6;
+}
+.action-event-detail pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.integration-guide {
+  padding: 24px;
+}
+.integration-guide ol {
+  padding-left: 22px;
+}
+.integration-guide li,
+.integration-guide p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #aab7ca;
+  margin-bottom: 12px;
+}
+.ai-prompt {
+  width: 100%;
+  display: block;
+  margin-top: 20px;
+  resize: vertical;
+  font:
+    12px/1.7 'Inter Variable',
+    sans-serif;
+  min-height: 320px;
+  white-space: pre-wrap;
+}
+@media (max-width: 1100px) {
+  .action-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .action-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .action-event summary {
+    grid-template-columns: 140px minmax(110px, 1fr) 90px;
+  }
+  .action-event summary > span:nth-of-type(1) {
+    grid-column: 2;
+  }
+  .action-event summary > span:last-child {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+@media (max-width: 650px) {
+  .action-filters {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .action-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .action-event summary {
+    grid-template-columns: 1fr 1fr;
+  }
+  .action-event summary > strong {
+    grid-column: 1/-1;
+    grid-row: 1;
+  }
+  .action-event summary > span:nth-of-type(1) {
+    grid-column: auto;
+  }
+  .action-event summary > span:last-child {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .action-chart,
+  .action-ranking,
+  .action-recent,
+  .integration-guide {
+    padding: 16px;
+  }
+}
+
+.action-chart .panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.action-chart .panel-title h2 {
+  margin: 0;
+}
+.action-chart .form-note {
+  color: #91a0b6;
+}
+.action-filters select,
+.action-filters input {
+  border: 1px solid #293344;
+  border-radius: 6px;
+  padding: 9px 10px;
+  background: #0c1119;
+  color: #d7e1ed;
+}

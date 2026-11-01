@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('botControl', {
+  actions: (params) => ipcRenderer.invoke('control:actions', params),
   logs: (params) => ipcRenderer.invoke('control:logs', params),
   inspectProject: (directory, entrypoint) =>
     ipcRenderer.invoke('control:inspect-project', directory, entrypoint),

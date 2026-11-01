@@ -1,4 +1,4 @@
-include LICENSE README.md README.ru.md README.pypi.md THIRD_PARTY_NOTICES.md AUTHORS.md
+include LICENSE README.md README.ru.md README.en.md README.pypi.md THIRD_PARTY_NOTICES.md AUTHORS.md
 include requirements-dev.lock
 recursive-include src *.py
 recursive-include src/telegram_bot_control/web_assets *.html *.js *.css *.woff2 *.png *.svg *.txt

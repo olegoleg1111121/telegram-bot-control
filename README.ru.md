@@ -1,5 +1,15 @@
 # Telegram Bot Control
 
+[Русский](README.md) · [English](README.en.md)
+
+**0.6.0:** события из кода через `monitor.track_action()` и декоратор `@monitor.action()`,
+графики и история срабатываний с точным временем, результатом и длительностью.
+[Аналитика событий](docs/actions.ru.md).
+
+**Подключаете бота с помощью ИИ?** [Скопируйте готовый промпт](docs/ai-integration.ru.md).
+Он учитывает существующий код, `.env`, логгер, команды запуска и **обычный Python без venv**.
+Тот же промпт можно скопировать из панели в разделе «Подключить с ИИ».
+
 Готовые сборки: [GitHub Releases](https://github.com/olegoleg1111121/telegram-bot-control/releases).
 Библиотека опубликована в [PyPI](https://pypi.org/project/telegram-bot-control/):
 
@@ -22,7 +32,7 @@ Node.js для установки не нужен. [Установка и пуб
 если бот сам загружает `.env`, дополнительное требование `BOT_TOKEN` не добавляется.
 [Веб-панель и Termux](docs/web-panel.ru.md).
 
-[English overview](README.md) · [Подготовка и публикация в GitHub](docs/publishing.ru.md)
+[English overview](README.en.md) · [Подготовка и публикация в GitHub](docs/publishing.ru.md)
 
 **0.3.1:** добавлены трей, обучение при первом запуске и ярлыки Windows.
 [Подробная инструкция первого запуска](docs/getting-started.ru.md).

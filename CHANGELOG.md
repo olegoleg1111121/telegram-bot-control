@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.0 — 2026-11-01
+
+- Explicit `monitor.track_action` events and sync/async `@monitor.action` decorators.
+- Per-action counts, user totals, outcomes, duration, timelines and timestamped history.
+- Callback compatibility, same-update deduplication, HMAC idempotency keys and separate inbound totals.
+- Russian-first GitHub README and bilingual Russian/English PyPI description.
+- Copyable AI integration guide in the repository, dashboard and connection wizard.
+- Read-only regular-Python discovery alongside existing project virtual environments.
+- No additional runtime dependencies.
+- Allow bounded extra grace for cooperative stop while a managed bot is still importing.
+
 ## 0.5.1 — 2026-10-30
 
 - Retain redacted stdout/stderr for bot startup and preparation failures before SDK connection.

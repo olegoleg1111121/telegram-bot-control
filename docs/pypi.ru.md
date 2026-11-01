@@ -1,6 +1,6 @@
 # Публикация библиотеки в PyPI
 
-Версия 0.5.1 [опубликована в PyPI](https://pypi.org/project/telegram-bot-control/)
+Версия 0.6.0 [опубликована в PyPI](https://pypi.org/project/telegram-bot-control/)
 2026-11-01 через [Trusted Publishing](https://github.com/olegoleg1111121/telegram-bot-control/actions/runs/41307728202).
 Одноразовая настройка для текущего репозитория уже выполнена.
 
@@ -31,7 +31,7 @@ wheel/sdist через Trusted Publishing. Публикация запускае
 3. В GitHub создать environment `pypi` для этого репозитория. Если добавить
    обязательного reviewer, publish job будет ожидать его подтверждения.
 4. В Actions открыть **Publish Python package to PyPI**, нажать Run workflow
-   и выбрать существующий тег `v0.5.1`. После успешного publish проверить страницу
+   и выбрать существующий тег `v0.6.0`. После успешного publish проверить страницу
    проекта и установку в чистое окружение.
 
 Pending publisher не резервирует имя: проект появляется при первом успешном upload.
@@ -56,7 +56,7 @@ tgbots web --port 8765 --data-dir /srv/bot-control/data
 Альтернативно можно установить wheel GitHub Release:
 
 ```sh
-python -m pip install "telegram-bot-control[aiogram] @ https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.5.1/telegram_bot_control-0.5.1-py3-none-any.whl"
+python -m pip install "telegram-bot-control[aiogram] @ https://github.com/olegoleg1111121/telegram-bot-control/releases/download/v0.6.0/telegram_bot_control-0.6.0-py3-none-any.whl"
 ```
 
 Wheel включает веб-интерфейс, поэтому сборка Node.js на сервере пользователя не
