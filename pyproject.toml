@@ -26,7 +26,7 @@ classifiers = [
 [project.optional-dependencies]
 aiogram = ["aiogram>=3.20,<4"]
 dev = ["aiogram>=3.20,<4", "pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.14,<1"]
-release = ["build>=1.2,<2", "twine>=6,<7"]
+release = ["build>=1.2,<2", "twine>=6,<8"]
 
 [project.urls]
 Homepage = "https://github.com/olegoleg1111121/telegram-bot-control"
