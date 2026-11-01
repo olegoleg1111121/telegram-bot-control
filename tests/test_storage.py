@@ -3,6 +3,7 @@ import sqlite3
 import subprocess
 import sys
 import time
+import threading
 
 import pytest
 
@@ -10,6 +11,35 @@ from telegram_bot_control.bridge import Bridge
 from telegram_bot_control.config import DEFAULTS, load_settings, save_settings, validate_settings
 from telegram_bot_control.privacy import describe_error
 from telegram_bot_control.store import Store, read_snapshot, session_state
+
+
+def test_reader_retries_a_short_exclusive_database_lock(tmp_path):
+    from telegram_bot_control.store import reader
+
+    path = tmp_path / "locked.sqlite3"
+    with sqlite3.connect(path) as connection:
+        connection.execute("PRAGMA user_version=2")
+        connection.execute("CREATE TABLE records(value INTEGER)")
+        connection.execute("INSERT INTO records VALUES (7)")
+    locked = threading.Event()
+
+    def writer():
+        with sqlite3.connect(path) as connection:
+            connection.execute("BEGIN EXCLUSIVE")
+            locked.set()
+            time.sleep(0.6)
+
+    thread = threading.Thread(target=writer)
+    thread.start()
+    try:
+        assert locked.wait(timeout=3)
+        connection = reader(path)
+        try:
+            assert connection.execute("SELECT value FROM records").fetchone()[0] == 7
+        finally:
+            connection.close()
+    finally:
+        thread.join(timeout=3)
 
 
 def write(store, events, *, session_id="one", started=None, state="running", name="Example"):

@@ -123,6 +123,10 @@ test('detects a Python file or installation folder mistakenly used as data stora
     () => validateDataDirectory(file),
     (error) => error.code === 'data_not_directory',
   );
+  assert.throws(
+    () => validateDataDirectory('/usr/bin/python3.14'),
+    (error) => error.code === 'data_is_python',
+  );
   assert.doesNotThrow(() => validateDataDirectory(''));
   assert.doesNotThrow(() => validateDataDirectory(path.join(root, 'new-data')));
 });

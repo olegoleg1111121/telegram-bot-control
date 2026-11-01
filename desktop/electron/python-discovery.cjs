@@ -274,7 +274,11 @@ function validateDataDirectory(value) {
   if (typeof value !== 'string' || /[\0\r\n]/.test(value))
     throw Object.assign(new Error('Invalid data directory'), { code: 'data_invalid' });
   const directory = clean(value);
-  if (/(?:^|[\\/])python(?:[\d.]*)?\.exe$/i.test(directory))
+  let directoryExists = false;
+  try {
+    directoryExists = fs.statSync(directory).isDirectory();
+  } catch {}
+  if (!directoryExists && /(?:^|[\\/])python[\d.]*(?:\.exe)?$/i.test(directory))
     throw Object.assign(new Error('Python executable entered as data directory'), {
       code: 'data_is_python',
       python: directory,

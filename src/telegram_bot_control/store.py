@@ -92,13 +92,25 @@ def mailbox_files(directory: Path) -> list[Path]:
 
 
 def reader(path: Path) -> sqlite3.Connection:
-    connection = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True, timeout=0.3)
-    connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA query_only=ON")
-    if connection.execute("PRAGMA user_version").fetchone()[0] > 2:
-        connection.close()
-        raise ValueError("Unsupported database schema")
-    return connection
+    for attempt in range(3):
+        connection = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True, timeout=0.3)
+        try:
+            connection.row_factory = sqlite3.Row
+            connection.execute("PRAGMA query_only=ON")
+            if connection.execute("PRAGMA user_version").fetchone()[0] > 2:
+                raise ValueError("Unsupported database schema")
+            return connection
+        except sqlite3.OperationalError as error:
+            connection.close()
+            if attempt == 2 or getattr(error, "sqlite_errorcode", 0) & 0xFF not in (
+                sqlite3.SQLITE_BUSY,
+                sqlite3.SQLITE_LOCKED,
+            ):
+                raise
+            time.sleep(0.05 * (attempt + 1))
+        except Exception:
+            connection.close()
+            raise
 
 
 class Store:
